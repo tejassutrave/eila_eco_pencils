@@ -10,10 +10,10 @@ export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Compute unique storage key based on logged in user ID
+  // Compute storage key based on active user state
   const cartStorageKey = user?.id ? `eila_cart_${user.id}` : 'eila_cart_guest';
 
-  // Load user-specific cart when user or storage key changes
+  // Synchronize cart whenever user logs in or out
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem(cartStorageKey);
@@ -23,18 +23,17 @@ export function CartProvider({ children }) {
         setCart([]);
       }
     } catch (e) {
-      console.error('Failed to load user-specific cart:', e);
       setCart([]);
     }
-  }, [cartStorageKey]);
+  }, [user, cartStorageKey]);
 
-  // Save cart to user-specific localStorage whenever cart changes
+  // Persist active cart to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem(cartStorageKey, JSON.stringify(cart));
-    } catch (e) {
-      console.error('Failed to save user-specific cart:', e);
-    }
+      if (cartStorageKey) {
+        localStorage.setItem(cartStorageKey, JSON.stringify(cart));
+      }
+    } catch (e) {}
   }, [cart, cartStorageKey]);
 
   const addToCart = (product, quantity = 1) => {
@@ -69,7 +68,9 @@ export function CartProvider({ children }) {
   const clearCart = () => {
     setCart([]);
     try {
-      localStorage.removeItem(cartStorageKey);
+      if (cartStorageKey) {
+        localStorage.removeItem(cartStorageKey);
+      }
     } catch (e) {}
   };
 

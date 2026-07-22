@@ -69,13 +69,12 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // Create New Account (Sign Up) with direct Supabase DB profile insertion & rate limit resilience
+  // Sign Up with direct profiles database insert
   const signUp = async ({ username, email, password }) => {
     const cleanEmail = email.trim().toLowerCase();
     const cleanUsername = username.trim();
     const registeredUsers = getRegisteredUsers();
 
-    // Check if account exists locally
     const existingUser = registeredUsers.find(
       (u) => u.email === cleanEmail || u.username.toLowerCase() === cleanUsername.toLowerCase()
     );
@@ -90,9 +89,8 @@ export function AuthProvider({ children }) {
     const passwordHash = bcrypt.hashSync(password, 10);
     let userId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
 
-    // 1. Attempt Supabase Auth Registration
     try {
-      const { data: authData, error: authErr } = await supabase.auth.signUp({
+      const { data: authData } = await supabase.auth.signUp({
         email: cleanEmail,
         password,
         options: {
@@ -106,27 +104,18 @@ export function AuthProvider({ children }) {
       if (authData?.user?.id) {
         userId = authData.user.id;
       }
-    } catch (e) {
-      console.warn('Supabase auth signup notice:', e.message);
-    }
+    } catch (e) {}
 
-    // 2. Direct insert into Supabase `public.profiles` database table
     try {
-      const { error: dbErr } = await supabase.from('profiles').insert({
-        id: userId.startsWith('usr_') ? undefined : userId, // use Supabase auth UUID if available
+      await supabase.from('profiles').insert({
+        id: userId.startsWith('usr_') ? undefined : userId,
         username: cleanUsername,
         full_name: cleanUsername,
         email: cleanEmail,
         password_hash: passwordHash,
         role: 'customer'
       });
-
-      if (dbErr) {
-        console.warn('Direct profile insert notice:', dbErr.message);
-      }
-    } catch (dbException) {
-      console.warn('Profile table exception:', dbException.message);
-    }
+    } catch (e) {}
 
     const newUserObj = {
       id: userId,
@@ -154,7 +143,6 @@ export function AuthProvider({ children }) {
     const cleanEmail = email.trim().toLowerCase();
     const registeredUsers = getRegisteredUsers();
 
-    // 1. Try Supabase Auth
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
@@ -174,15 +162,14 @@ export function AuthProvider({ children }) {
       }
     } catch (e) {}
 
-    // 2. Try Supabase `profiles` table direct query
     try {
-      const { data: profileData, error: profileErr } = await supabase
+      const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
         .eq('email', cleanEmail)
         .single();
 
-      if (!profileErr && profileData) {
+      if (profileData) {
         const isMatch = profileData.password_hash
           ? bcrypt.compareSync(password, profileData.password_hash)
           : false;
@@ -206,7 +193,6 @@ export function AuthProvider({ children }) {
       }
     } catch (e) {}
 
-    // 3. Local Registry Lookup
     const existingUser = registeredUsers.find((u) => u.email === cleanEmail);
 
     if (!existingUser) {
@@ -237,15 +223,22 @@ export function AuthProvider({ children }) {
     return { success: true, user: activeUser };
   };
 
-  // Sign Out
+  // Sign Out: Clears all local memory, user session & guest cart completely
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
     } catch (e) {}
+
     setUser(null);
-    localStorage.removeItem('eila_logged_user');
-    
+
     if (typeof window !== 'undefined') {
+      // Clear all guest and user carts from localStorage
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('eila_cart_') || key === 'eila_logged_user') {
+          localStorage.removeItem(key);
+        }
+      });
+      // Redirect to main page for fresh start
       window.location.href = '/';
     }
   };
