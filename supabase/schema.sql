@@ -7,7 +7,7 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. PROFILES TABLE (Customers & Admins)
+-- 1. CUSTOMER PROFILES TABLE
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     username TEXT UNIQUE NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Trigger to automatically create profile on user signup
+-- Trigger to automatically create customer profile on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -43,7 +43,24 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- 2. CATEGORIES TABLE
+-- 2. SEPARATE ADMIN PROFILES TABLE (Admins & SuperAdmins with Analytics & Department Controls)
+CREATE TABLE IF NOT EXISTS public.admin_profiles (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    admin_code TEXT UNIQUE NOT NULL,
+    full_name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT,
+    role TEXT NOT NULL DEFAULT 'admin' CHECK (role IN ('admin', 'super_admin')),
+    department TEXT DEFAULT 'Operations',
+    permissions JSONB DEFAULT '["analytics", "inventory", "orders", "inquiries", "revenue_reports"]'::jsonb,
+    dashboard_preferences JSONB DEFAULT '{"theme": "dark", "default_view": "sales_overview", "widgets": ["revenue_chart", "traffic", "inventory_alerts", "bulk_leads"]}'::jsonb,
+    last_login_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. CATEGORIES TABLE
 CREATE TABLE IF NOT EXISTS public.categories (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL UNIQUE,
@@ -52,7 +69,7 @@ CREATE TABLE IF NOT EXISTS public.categories (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. PRODUCTS TABLE
+-- 4. PRODUCTS TABLE
 CREATE TABLE IF NOT EXISTS public.products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
@@ -68,7 +85,7 @@ CREATE TABLE IF NOT EXISTS public.products (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. USER CARTS TABLE (Per-User Cart Isolation)
+-- 5. USER CARTS TABLE (Per-User Cart Isolation)
 CREATE TABLE IF NOT EXISTS public.user_carts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID UNIQUE NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -76,7 +93,7 @@ CREATE TABLE IF NOT EXISTS public.user_carts (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5. USER CART ITEMS TABLE
+-- 6. USER CART ITEMS TABLE
 CREATE TABLE IF NOT EXISTS public.user_cart_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     cart_id UUID NOT NULL REFERENCES public.user_carts(id) ON DELETE CASCADE,
@@ -87,7 +104,7 @@ CREATE TABLE IF NOT EXISTS public.user_cart_items (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. PRODUCT IMAGES TABLE
+-- 7. PRODUCT IMAGES TABLE
 CREATE TABLE IF NOT EXISTS public.product_images (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
@@ -96,7 +113,7 @@ CREATE TABLE IF NOT EXISTS public.product_images (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 7. ORDERS TABLE
+-- 8. ORDERS TABLE
 CREATE TABLE IF NOT EXISTS public.orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_number TEXT NOT NULL UNIQUE,
@@ -117,7 +134,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 8. ORDER ITEMS TABLE
+-- 9. ORDER ITEMS TABLE
 CREATE TABLE IF NOT EXISTS public.order_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_id UUID NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
@@ -127,7 +144,7 @@ CREATE TABLE IF NOT EXISTS public.order_items (
     unit_price NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0)
 );
 
--- 9. CORPORATE & BULK INQUIRIES TABLE
+-- 10. CORPORATE & BULK INQUIRIES TABLE
 CREATE TABLE IF NOT EXISTS public.inquiries (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
@@ -142,6 +159,7 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
 
 -- INDEXES
 CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
+CREATE INDEX IF NOT EXISTS idx_admin_profiles_code ON public.admin_profiles(admin_code);
 CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_slug ON public.products(slug);
 CREATE INDEX IF NOT EXISTS idx_orders_user ON public.orders(user_id);
@@ -149,6 +167,7 @@ CREATE INDEX IF NOT EXISTS idx_user_carts_user ON public.user_carts(user_id);
 
 -- ROW LEVEL SECURITY (RLS) POLICIES
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.admin_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_carts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_cart_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
@@ -158,7 +177,7 @@ ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
 
--- Profiles RLS Policies
+-- Profiles Policies
 DROP POLICY IF EXISTS "Allow public select profiles" ON public.profiles;
 CREATE POLICY "Allow public select profiles" ON public.profiles FOR SELECT USING (true);
 
@@ -167,6 +186,16 @@ CREATE POLICY "Allow public insert profiles" ON public.profiles FOR INSERT WITH 
 
 DROP POLICY IF EXISTS "Allow public update profiles" ON public.profiles;
 CREATE POLICY "Allow public update profiles" ON public.profiles FOR UPDATE USING (true);
+
+-- Admin Profiles Policies
+DROP POLICY IF EXISTS "Allow public select admin profiles" ON public.admin_profiles;
+CREATE POLICY "Allow public select admin profiles" ON public.admin_profiles FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert admin profiles" ON public.admin_profiles;
+CREATE POLICY "Allow public insert admin profiles" ON public.admin_profiles FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update admin profiles" ON public.admin_profiles;
+CREATE POLICY "Allow public update admin profiles" ON public.admin_profiles FOR UPDATE USING (true);
 
 -- User Carts Policies
 DROP POLICY IF EXISTS "Users can manage own cart" ON public.user_carts;
@@ -198,7 +227,7 @@ CREATE POLICY "Allow order items insertion" ON public.order_items FOR INSERT WIT
 DROP POLICY IF EXISTS "Allow inquiries insertion" ON public.inquiries;
 CREATE POLICY "Allow inquiries insertion" ON public.inquiries FOR INSERT WITH CHECK (true);
 
--- SEED DATA (Categories & Products)
+-- SEED DATA (Categories, Products & SuperAdmin Profile)
 INSERT INTO public.categories (name, slug, description) VALUES
 ('Plantable Seed Pencils', 'plantable-seed-pencils', 'Pencils embedded with non-GMO plant seeds at the end capsule that grow into herbs, flowers & vegetables.'),
 ('Recycled Newspaper Pencils', 'recycled-newspaper-pencils', 'Pencils made from 100% recycled old newspapers without using any wood or tree harm.'),
@@ -210,3 +239,7 @@ INSERT INTO public.products (category_id, name, slug, sku, price, stock, descrip
 ((SELECT id FROM public.categories WHERE slug='recycled-newspaper-pencils'), 'Rainbow Recycled Newspaper Pencils (Pack of 10)', 'rainbow-recycled-newspaper-pencils-pack-10', 'EILA-NEWS-10', 199.00, 200, 'Handcrafted from 100% recycled newsprint paper. Each pencil reveals beautiful colorful paper layers when sharpened.', '["Saves trees & forests", "Easy to sharpen", "Non-toxic organic dye"]'::jsonb, true),
 ((SELECT id FROM public.categories WHERE slug='eco-stationery-gift-sets'), 'Deluxe Corporate Eco Gifting Combo', 'deluxe-corporate-eco-gifting-combo', 'EILA-GIFT-DELUXE', 499.00, 75, 'Premium eco-friendly gifting set containing 5 seed pencils, 5 newspaper pencils, 1 plantable seed notepad, and a bamboo ruler.', '["Includes Seed Notepad & Bamboo Ruler", "Custom branding available", "Eco-friendly kraft packaging"]'::jsonb, true)
 ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO public.admin_profiles (admin_code, full_name, email, role, department, permissions) VALUES
+('ADM-SUPER-01', 'Eila Executive Admin', 'admin@eilaecopencils.com', 'super_admin', 'Executive Operations', '["analytics", "inventory", "orders", "inquiries", "revenue_reports", "admin_management"]'::jsonb)
+ON CONFLICT (email) DO NOTHING;
