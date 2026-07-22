@@ -69,13 +69,13 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // Create New Account (Sign Up) with Supabase DB Profile Row Creation & Local Registry
+  // Create New Account (Sign Up) with direct Supabase DB profile insertion & rate limit resilience
   const signUp = async ({ username, email, password }) => {
     const cleanEmail = email.trim().toLowerCase();
     const cleanUsername = username.trim();
     const registeredUsers = getRegisteredUsers();
 
-    // Duplicate check
+    // Check if account exists locally
     const existingUser = registeredUsers.find(
       (u) => u.email === cleanEmail || u.username.toLowerCase() === cleanUsername.toLowerCase()
     );
@@ -88,10 +88,9 @@ export function AuthProvider({ children }) {
     }
 
     const passwordHash = bcrypt.hashSync(password, 10);
+    let userId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
 
-    let supabaseUserId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
-
-    // 1. Register in Supabase Auth
+    // 1. Attempt Supabase Auth Registration
     try {
       const { data: authData, error: authErr } = await supabase.auth.signUp({
         email: cleanEmail,
@@ -105,28 +104,32 @@ export function AuthProvider({ children }) {
       });
 
       if (authData?.user?.id) {
-        supabaseUserId = authData.user.id;
+        userId = authData.user.id;
       }
     } catch (e) {
-      console.warn('Supabase Auth Notice:', e.message);
+      console.warn('Supabase auth signup notice:', e.message);
     }
 
-    // 2. Direct insert/upsert into Supabase `public.profiles` database table
+    // 2. Direct insert into Supabase `public.profiles` database table
     try {
-      await supabase.from('profiles').upsert({
-        id: supabaseUserId,
+      const { error: dbErr } = await supabase.from('profiles').insert({
+        id: userId.startsWith('usr_') ? undefined : userId, // use Supabase auth UUID if available
         username: cleanUsername,
         full_name: cleanUsername,
         email: cleanEmail,
         password_hash: passwordHash,
         role: 'customer'
       });
-    } catch (dbErr) {
-      console.warn('Supabase Profile Table write notice:', dbErr.message);
+
+      if (dbErr) {
+        console.warn('Direct profile insert notice:', dbErr.message);
+      }
+    } catch (dbException) {
+      console.warn('Profile table exception:', dbException.message);
     }
 
     const newUserObj = {
-      id: supabaseUserId,
+      id: userId,
       username: cleanUsername,
       email: cleanEmail,
       passwordHash
@@ -151,7 +154,7 @@ export function AuthProvider({ children }) {
     const cleanEmail = email.trim().toLowerCase();
     const registeredUsers = getRegisteredUsers();
 
-    // 1. Check Supabase Auth
+    // 1. Try Supabase Auth
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
@@ -171,7 +174,39 @@ export function AuthProvider({ children }) {
       }
     } catch (e) {}
 
-    // 2. Local Registry Lookup
+    // 2. Try Supabase `profiles` table direct query
+    try {
+      const { data: profileData, error: profileErr } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', cleanEmail)
+        .single();
+
+      if (!profileErr && profileData) {
+        const isMatch = profileData.password_hash
+          ? bcrypt.compareSync(password, profileData.password_hash)
+          : false;
+
+        if (isMatch) {
+          const activeUser = {
+            id: profileData.id,
+            email: profileData.email,
+            username: profileData.username
+          };
+          setUser(activeUser);
+          localStorage.setItem('eila_logged_user', JSON.stringify(activeUser));
+          setIsAuthModalOpen(false);
+          return { success: true, user: activeUser };
+        } else {
+          return {
+            success: false,
+            error: 'Incorrect Password. Please check your password and try again.'
+          };
+        }
+      }
+    } catch (e) {}
+
+    // 3. Local Registry Lookup
     const existingUser = registeredUsers.find((u) => u.email === cleanEmail);
 
     if (!existingUser) {
