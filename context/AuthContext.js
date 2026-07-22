@@ -95,7 +95,6 @@ export function AuthProvider({ children }) {
       return { success: true, user: newUser };
     } catch (err) {
       console.error('SignUp Error:', err);
-      // Fallback local creation
       const mockUser = {
         id: 'usr_' + Math.random().toString(36).substring(2, 9),
         username: username || email.split('@')[0],
@@ -154,13 +153,17 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Sign Out
+  // Sign Out: Revokes JWT session, clears stored tokens & navigates to main page
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
     } catch (e) {}
     setUser(null);
     localStorage.removeItem('eila_logged_user');
+    
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
   };
 
   const openAuthModal = (mode = 'login') => {

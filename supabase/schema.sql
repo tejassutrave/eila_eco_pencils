@@ -1,5 +1,6 @@
 -- ==========================================
 -- Eila Eco Pencils - Supabase Database Schema
+-- Run this ENTIRE file from line 1 in SQL Editor
 -- ==========================================
 
 -- Enable UUID extension
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Trigger to automatically create profile on signup
+-- Trigger to automatically create profile on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -50,7 +51,7 @@ CREATE TABLE IF NOT EXISTS public.user_carts (
 CREATE TABLE IF NOT EXISTS public.user_cart_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     cart_id UUID NOT NULL REFERENCES public.user_carts(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    product_id UUID,
     product_name TEXT NOT NULL,
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     unit_price NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0),
@@ -81,6 +82,11 @@ CREATE TABLE IF NOT EXISTS public.products (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Foreign key for user_cart_items referencing products
+ALTER TABLE public.user_cart_items 
+  ADD CONSTRAINT fk_user_cart_items_product 
+  FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE;
 
 -- 6. PRODUCT IMAGES TABLE
 CREATE TABLE IF NOT EXISTS public.product_images (
@@ -135,7 +141,7 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- INDEXES
+-- INDEXES FOR FAST PERFORMANCE
 CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_slug ON public.products(slug);
 CREATE INDEX IF NOT EXISTS idx_orders_user ON public.orders(user_id);
@@ -152,28 +158,46 @@ ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
 
--- Profiles: Users can view and update their own profile
+-- Profiles Policies
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 
--- User Carts: Isolated strictly to the authenticated user
+-- User Carts Policies
+DROP POLICY IF EXISTS "Users can manage own cart" ON public.user_carts;
 CREATE POLICY "Users can manage own cart" ON public.user_carts FOR ALL USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can manage own cart items" ON public.user_cart_items;
 CREATE POLICY "Users can manage own cart items" ON public.user_cart_items FOR ALL USING (
     cart_id IN (SELECT id FROM public.user_carts WHERE user_id = auth.uid())
 );
 
--- Public Product Read
+-- Public Catalog Policies
+DROP POLICY IF EXISTS "Public categories are viewable by everyone" ON public.categories;
 CREATE POLICY "Public categories are viewable by everyone" ON public.categories FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Active products are viewable by everyone" ON public.products;
 CREATE POLICY "Active products are viewable by everyone" ON public.products FOR SELECT USING (active = true);
+
+DROP POLICY IF EXISTS "Product images are viewable by everyone" ON public.product_images;
 CREATE POLICY "Product images are viewable by everyone" ON public.product_images FOR SELECT USING (true);
 
--- Orders: Users can insert orders and view their own orders
+-- Orders Policies
+DROP POLICY IF EXISTS "Allow order insertion" ON public.orders;
 CREATE POLICY "Allow order insertion" ON public.orders FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Users can view own orders" ON public.orders;
 CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id OR auth.uid() IS NULL);
+
+DROP POLICY IF EXISTS "Allow order items insertion" ON public.order_items;
 CREATE POLICY "Allow order items insertion" ON public.order_items FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow inquiries insertion" ON public.inquiries;
 CREATE POLICY "Allow inquiries insertion" ON public.inquiries FOR INSERT WITH CHECK (true);
 
--- SEED DATA
+-- SEED DATA (Categories & Products)
 INSERT INTO public.categories (name, slug, description) VALUES
 ('Plantable Seed Pencils', 'plantable-seed-pencils', 'Pencils embedded with non-GMO plant seeds at the end capsule that grow into herbs, flowers & vegetables.'),
 ('Recycled Newspaper Pencils', 'recycled-newspaper-pencils', 'Pencils made from 100% recycled old newspapers without using any wood or tree harm.'),

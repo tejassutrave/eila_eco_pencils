@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { X, User, Mail, Lock, Sparkles, CheckCircle2, ArrowRight, UserPlus, LogIn } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, User, Mail, Lock, UserPlus, LogIn } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function AuthModal() {
@@ -12,6 +12,16 @@ export default function AuthModal() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Automatically reset form inputs whenever modal opens or mode changes
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      setUsername('');
+      setEmail('');
+      setPassword('');
+      setErrorMsg('');
+    }
+  }, [isAuthModalOpen, authMode]);
 
   if (!isAuthModalOpen) return null;
 
@@ -105,7 +115,7 @@ export default function AuthModal() {
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
           
           {authMode === 'signup' && (
             <div>
@@ -115,6 +125,7 @@ export default function AuthModal() {
                 <input
                   type="text"
                   required
+                  autoComplete="new-username"
                   placeholder="e.g. eco_lover"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -131,6 +142,7 @@ export default function AuthModal() {
               <input
                 type="email"
                 required
+                autoComplete="new-email"
                 placeholder="yourname@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -146,6 +158,7 @@ export default function AuthModal() {
               <input
                 type="password"
                 required
+                autoComplete="new-password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
