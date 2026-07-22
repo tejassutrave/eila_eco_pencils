@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Leaf, Menu, X, Search, Sparkles, User, LogOut, UserCheck } from 'lucide-react';
+import { ShoppingBag, Leaf, Menu, X, Search, Sparkles, User, LogOut, UserCheck, Truck } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 
@@ -39,7 +39,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-[#2d4036]">
+          <nav className="hidden md:flex items-center gap-7 text-sm font-semibold text-[#2d4036]">
             <Link href="/" className="hover:text-[#1b4332] transition-colors py-1 border-b-2 border-transparent hover:border-[#2d6a4f]">
               Home
             </Link>
@@ -54,6 +54,9 @@ export default function Navbar() {
             </Link>
             <Link href="/about" className="hover:text-[#1b4332] transition-colors py-1 border-b-2 border-transparent hover:border-[#2d6a4f]">
               About Us
+            </Link>
+            <Link href="/track-order" className="hover:text-[#1b4332] transition-colors py-1 border-b-2 border-transparent hover:border-[#2d6a4f] flex items-center gap-1">
+              <Truck className="w-3.5 h-3.5 text-[#52b788]" /> Track Order
             </Link>
           </nav>
 
@@ -81,6 +84,13 @@ export default function Navbar() {
                     <div className="px-3 py-2 border-b border-[#f0efe6] text-[11px] text-[#4a5e55]">
                       Logged in as <strong className="block text-[#0f231c] truncate">{user.email}</strong>
                     </div>
+                    <Link
+                      href="/track-order"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="w-full text-left px-3 py-2 hover:bg-[#faf9f5] rounded-xl flex items-center gap-2 transition-colors mt-1 text-[#0f231c]"
+                    >
+                      <Truck className="w-3.5 h-3.5 text-[#52b788]" /> Track My Shipment
+                    </Link>
                     <button
                       onClick={() => { signOut(); setUserDropdownOpen(false); }}
                       className="w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-xl flex items-center gap-2 transition-colors mt-1"
@@ -145,6 +155,9 @@ export default function Navbar() {
           </Link>
           <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-xl hover:bg-[#f0efe6]">
             About Us
+          </Link>
+          <Link href="/track-order" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-xl hover:bg-[#f0efe6] text-[#2d6a4f] font-bold">
+            🚚 Track My Order
           </Link>
           {!user ? (
             <button

@@ -5,6 +5,7 @@ import { CartProvider } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import CartDrawer from '@/components/CartDrawer';
 import AuthModal from '@/components/AuthModal';
+import EcoAssistantWidget from '@/components/EcoAssistantWidget';
 import Footer from '@/components/Footer';
 
 const outfit = Outfit({
@@ -46,6 +47,7 @@ export default function RootLayout({ children }) {
             <CartDrawer />
             <AuthModal />
             <main className="flex-1">{children}</main>
+            <EcoAssistantWidget />
             <Footer />
           </CartProvider>
         </AuthProvider>

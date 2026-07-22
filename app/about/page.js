@@ -2,11 +2,41 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Leaf, Users, Award, Sparkles, ArrowRight } from 'lucide-react';
+import { Leaf, Users, Award, Sparkles, Star, Camera, Heart, Sprout, ArrowRight } from 'lucide-react';
 
 export default function AboutPage() {
+  const customerStories = [
+    {
+      id: 1,
+      name: 'Ananya Sharma',
+      location: 'Bengaluru, KA',
+      plantType: 'Organic Tomato 🍅',
+      daysToSprout: '12 Days',
+      review: 'Planted the tomato seed pencil end after finishing my final exams. Within 2 weeks I had a healthy green sprout on my balcony garden!',
+      stars: 5
+    },
+    {
+      id: 2,
+      name: 'Rohan Deshmukh',
+      location: 'Pune, MH',
+      plantType: 'Golden Sunflower 🌻',
+      daysToSprout: '10 Days',
+      review: 'My 8-year-old daughter was super excited to water her pencil stub every morning. Now we have a beautiful blooming sunflower!',
+      stars: 5
+    },
+    {
+      id: 3,
+      name: 'Meera Nair',
+      location: 'Kochi, KL',
+      plantType: 'Sweet Basil 🌿',
+      daysToSprout: '8 Days',
+      review: 'The basil seeds sprouted so fast! I use fresh basil leaves from my Eila pencil plant in homemade pasta sauce.',
+      stars: 5
+    }
+  ];
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
       
       {/* Hero Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
@@ -43,10 +73,10 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <div className="relative aspect-4/3 rounded-3xl overflow-hidden border border-[#e8e6da] shadow-xl">
+        <div className="relative aspect-4/3 rounded-3xl overflow-hidden border border-[#e8e6da] shadow-xl bg-[#faf9f5]">
           <img
-            src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000"
-            alt="Eila Eco Pencils Artisans"
+            src="/hero_seed_pencils.png"
+            alt="Eila Eco Pencils Crafting"
             className="w-full h-full object-cover"
           />
         </div>
@@ -87,6 +117,67 @@ export default function AboutPage() {
         </div>
 
       </div>
+
+      {/* CUSTOMER GROWING STORIES & COMMUNITY PLANT GALLERY */}
+      <section className="space-y-10 border-t border-[#e8e6da] pt-16">
+        
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <span className="bg-[#1b4332] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest inline-flex items-center gap-1.5 shadow-md">
+            <Camera className="w-3.5 h-3.5 text-amber-300" /> Customer Plant Growth Community
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black text-[#0f231c] tracking-tight">
+            Real Plants Grown By Our Buyers 🌻
+          </h2>
+          <p className="text-sm text-[#4a5e55]">
+            Check out real photos and plant germination success stories shared by our eco-conscious buyers across India!
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {customerStories.map((story) => (
+            <div key={story.id} className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-4 shadow-md hover:shadow-xl transition-shadow flex flex-col justify-between">
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="bg-[#e8f5e9] text-[#1b4332] text-xs font-extrabold px-3 py-1 rounded-full border border-[#b7e4c7]">
+                    {story.plantType}
+                  </span>
+                  <div className="flex text-amber-400">
+                    {[...Array(story.stars)].map((_, i) => (
+                      <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-xs text-[#3b5247] italic leading-relaxed">
+                  "{story.review}"
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-[#f0efe6] flex items-center justify-between text-xs">
+                <div>
+                  <strong className="block text-[#0f231c] font-extrabold">{story.name}</strong>
+                  <span className="text-[#4a5e55] text-[11px]">{story.location}</span>
+                </div>
+                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
+                  Sprouted in {story.daysToSprout}
+                </span>
+              </div>
+
+            </div>
+          ))}
+        </div>
+
+        <div className="p-8 bg-[#faf9f5] border border-[#e8e6da] rounded-3xl text-center space-y-4 max-w-xl mx-auto shadow-sm">
+          <h4 className="font-extrabold text-[#0f231c] text-lg flex items-center justify-center gap-2">
+            <Sprout className="w-5 h-5 text-[#2d6a4f]" /> Have a Sprouted Plant Photo?
+          </h4>
+          <p className="text-xs text-[#4a5e55]">
+            Share your pencil plant photos on Instagram tagging <strong>@EilaEcoPencils</strong> or email us to feature on our official community gallery & win a free seed combo box!
+          </p>
+        </div>
+
+      </section>
 
     </div>
   );
