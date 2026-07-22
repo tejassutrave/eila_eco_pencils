@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BarChart3, TrendingUp, ShoppingBag, Package, Users, Building2, ShieldCheck, LogOut, Plus, Edit2, CheckCircle2, Clock, AlertTriangle, ArrowUpRight, DollarSign, RefreshCw, Filter } from 'lucide-react';
 import { INITIAL_PRODUCTS } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
+  const { signOut } = useAuth();
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
   const [activeTab, setActiveTab] = useState('analytics'); // 'analytics' | 'inventory' | 'orders' | 'inquiries' | 'profile'
 
@@ -109,9 +111,8 @@ export default function AdminDashboardPage() {
     );
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('eila_admin_session');
-    router.push('/admin/login');
+  const handleLogout = async () => {
+    await signOut();
   };
 
   return (
@@ -180,7 +181,7 @@ export default function AdminDashboardPage() {
           <button
             onClick={handleLogout}
             className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition-colors ml-2"
-            title="Sign Out"
+            title="Sign Out to Main Page"
           >
             <LogOut className="w-5 h-5" />
           </button>
