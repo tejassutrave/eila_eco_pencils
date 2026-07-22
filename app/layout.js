@@ -33,11 +33,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${inter.variable} dark`}>
+    <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
       <head>
         <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
       </head>
-      <body className="bg-emerald-950 text-emerald-50 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-emerald-950">
+      <body className="bg-[#faf9f5] text-[#1a2e26] font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-[#2d6a4f] selection:text-white">
         <CartProvider>
           <Navbar />
           <CartDrawer />

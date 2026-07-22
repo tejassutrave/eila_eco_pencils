@@ -9,7 +9,7 @@ import { useCart } from '@/context/CartContext';
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const router = Router();
+  const router = useRouter();
   const { addToCart } = useCart();
 
   const product = INITIAL_PRODUCTS.find((p) => p.slug === params?.slug) || INITIAL_PRODUCTS[0];
@@ -30,7 +30,7 @@ export default function ProductDetailPage() {
       {/* Back Link */}
       <Link
         href="/shop"
-        className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
+        className="inline-flex items-center gap-2 text-xs font-bold text-[#2d6a4f] hover:text-[#1b4332] transition-colors"
       >
         <ArrowLeft className="w-4 h-4" /> Back to Store Catalog
       </Link>
@@ -39,14 +39,14 @@ export default function ProductDetailPage() {
         
         {/* Product Images Showcase */}
         <div className="space-y-4">
-          <div className="relative aspect-square rounded-3xl bg-emerald-900/40 border border-emerald-800 overflow-hidden shadow-xl">
+          <div className="relative aspect-square rounded-3xl bg-white border border-[#e8e6da] overflow-hidden shadow-md p-4">
             <img
               src={selectedImage || product.image}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-2xl"
             />
-            <div className="absolute top-4 left-4 bg-emerald-900/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-amber-300 border border-emerald-700/60 flex items-center gap-1.5">
-              <Sprout className="w-4 h-4" />
+            <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold text-[#1b4332] border border-[#e8e6da] shadow-sm flex items-center gap-1.5">
+              <Sprout className="w-4 h-4 text-[#52b788]" />
               <span>Plantable Seed Capsule</span>
             </div>
           </div>
@@ -58,11 +58,11 @@ export default function ProductDetailPage() {
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(imgUrl)}
-                  className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
-                    selectedImage === imgUrl ? 'border-emerald-400 scale-95' : 'border-emerald-800 hover:border-emerald-600'
+                  className={`relative w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all p-1 bg-white ${
+                    selectedImage === imgUrl ? 'border-[#1b4332] scale-95' : 'border-[#e8e6da] hover:border-[#52b788]'
                   }`}
                 >
-                  <img src={imgUrl} alt={`${product.name} thumbnail ${idx}`} className="w-full h-full object-cover" />
+                  <img src={imgUrl} alt={`${product.name} thumbnail ${idx}`} className="w-full h-full object-cover rounded-xl" />
                 </button>
               ))}
             </div>
@@ -73,10 +73,10 @@ export default function ProductDetailPage() {
         <div className="space-y-6">
           
           <div className="space-y-2">
-            <span className="text-xs font-bold tracking-wider text-emerald-400 uppercase">
+            <span className="text-xs font-extrabold tracking-wider text-[#2d6a4f] uppercase">
               {product.category_name}
             </span>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-[#0f231c] leading-tight">
               {product.name}
             </h1>
 
@@ -87,52 +87,52 @@ export default function ProductDetailPage() {
                   <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <span className="font-extrabold text-white">{product.rating}</span>
-              <span className="text-emerald-400 text-xs">({product.reviews_count} verified buyer reviews)</span>
+              <span className="font-black text-[#0f231c]">{product.rating}</span>
+              <span className="text-[#4a5e55] text-xs">({product.reviews_count} verified buyer reviews)</span>
             </div>
           </div>
 
           {/* Price */}
-          <div className="p-4 bg-emerald-900/40 border border-emerald-800 rounded-2xl flex items-baseline gap-3">
-            <span className="text-3xl font-extrabold text-white">₹{product.price.toFixed(2)}</span>
-            <span className="text-xs text-emerald-300">Inclusive of all taxes</span>
-            <span className="ml-auto text-xs font-bold text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/30">
+          <div className="p-5 bg-white border border-[#e8e6da] rounded-3xl flex items-baseline gap-3 shadow-sm">
+            <span className="text-3xl font-black text-[#0f231c]">₹{product.price.toFixed(2)}</span>
+            <span className="text-xs text-[#4a5e55]">Inclusive of all taxes</span>
+            <span className="ml-auto text-xs font-bold text-[#1b4332] bg-[#e8f5e9] px-3 py-1 rounded-full border border-[#b7e4c7]">
               In Stock ({product.stock} units ready)
             </span>
           </div>
 
           {/* Description */}
-          <p className="text-sm text-emerald-200 leading-relaxed">
+          <p className="text-sm text-[#3b5247] leading-relaxed">
             {product.description}
           </p>
 
-          {/* Key Features Bullet List */}
+          {/* Key Features */}
           <div className="space-y-2 pt-2">
-            <h4 className="font-bold text-xs text-white uppercase tracking-wider">Key Features & Benefits</h4>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-emerald-200">
+            <h4 className="font-bold text-xs text-[#0f231c] uppercase tracking-wider">Key Features & Benefits</h4>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#2d4036]">
               {product.features?.map((feat, i) => (
-                <li key={i} className="flex items-start gap-2 bg-emerald-900/30 p-2.5 rounded-xl border border-emerald-800/60">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <li key={i} className="flex items-start gap-2 bg-white p-3 rounded-2xl border border-[#e8e6da]">
+                  <Check className="w-4 h-4 text-[#52b788] shrink-0 mt-0.5" />
                   <span>{feat}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Quantity & Add to Cart Controls */}
-          <div className="pt-4 border-t border-emerald-800 flex flex-col sm:flex-row items-center gap-4">
+          {/* Quantity & Add to Cart */}
+          <div className="pt-4 border-t border-[#e8e6da] flex flex-col sm:flex-row items-center gap-4">
             
-            <div className="flex items-center border-2 border-emerald-700 bg-emerald-950 rounded-xl p-1 w-full sm:w-auto justify-between">
+            <div className="flex items-center border border-[#e8e6da] bg-white rounded-full p-1.5 w-full sm:w-auto justify-between">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="px-3 py-1.5 text-emerald-300 hover:text-white font-bold text-base"
+                className="px-3.5 py-1 text-[#2d4036] hover:text-[#0f231c] font-bold text-base"
               >
                 -
               </button>
-              <span className="px-4 font-extrabold text-sm text-white">{quantity}</span>
+              <span className="px-4 font-black text-sm text-[#0f231c]">{quantity}</span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="px-3 py-1.5 text-emerald-300 hover:text-white font-bold text-base"
+                className="px-3.5 py-1 text-[#2d4036] hover:text-[#0f231c] font-bold text-base"
               >
                 +
               </button>
@@ -140,10 +140,10 @@ export default function ProductDetailPage() {
 
             <button
               onClick={handleAddToCart}
-              className={`w-full sm:flex-1 py-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all shadow-xl ${
+              className={`w-full sm:flex-1 py-4 rounded-full font-extrabold text-sm flex items-center justify-center gap-2 transition-all shadow-lg ${
                 added
-                  ? 'bg-amber-400 text-emerald-950 shadow-amber-400/20'
-                  : 'bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-emerald-950 shadow-emerald-950/60 hover:scale-105'
+                  ? 'bg-amber-400 text-[#0f231c]'
+                  : 'bg-[#1b4332] hover:bg-[#2d6a4f] text-white shadow-[#1b4332]/20 hover:scale-105'
               }`}
             >
               {added ? (
@@ -152,21 +152,21 @@ export default function ProductDetailPage() {
                 </>
               ) : (
                 <>
-                  <ShoppingBag className="w-5 h-5" /> Add to Cart (₹{(product.price * quantity).toFixed(2)})
+                  <ShoppingBag className="w-5 h-5 text-[#74c69d]" /> Add to Cart (₹{(product.price * quantity).toFixed(2)})
                 </>
               )}
             </button>
 
           </div>
 
-          {/* Plantable Instructions Box */}
-          <div className="p-4 bg-gradient-to-r from-emerald-900/60 to-teal-950/60 border border-emerald-700/60 rounded-2xl flex items-start gap-3">
-            <div className="p-2 bg-emerald-800 text-amber-300 rounded-xl shrink-0">
+          {/* Plantable Instructions */}
+          <div className="p-5 bg-[#e8f5e9] border border-[#b7e4c7] rounded-3xl flex items-start gap-3.5">
+            <div className="p-2.5 bg-[#1b4332] text-[#74c69d] rounded-2xl shrink-0">
               <Sprout className="w-5 h-5" />
             </div>
             <div className="text-xs space-y-1">
-              <h5 className="font-bold text-white">How to Plant This Pencil</h5>
-              <p className="text-emerald-300 leading-relaxed">
+              <h5 className="font-extrabold text-[#0f231c]">How to Plant This Pencil</h5>
+              <p className="text-[#2d6a4f] leading-relaxed">
                 When your pencil becomes too stubby to write with, stick the green capsule end downward in a pot of soil, water daily, and give it sunlight. Seeds will sprout in 5–10 days!
               </p>
             </div>
