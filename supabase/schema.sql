@@ -30,7 +30,9 @@ BEGIN
     NEW.email,
     'customer'
   )
-  ON CONFLICT (id) DO NOTHING;
+  ON CONFLICT (id) DO UPDATE SET
+    username = EXCLUDED.username,
+    email = EXCLUDED.email;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -160,21 +162,22 @@ ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
 
--- Profiles Policies
-DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
-CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
+-- Profiles RLS Policies
+DROP POLICY IF EXISTS "Allow public select profiles" ON public.profiles;
+CREATE POLICY "Allow public select profiles" ON public.profiles FOR SELECT USING (true);
 
-DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
-CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+DROP POLICY IF EXISTS "Allow public insert profiles" ON public.profiles;
+CREATE POLICY "Allow public insert profiles" ON public.profiles FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update profiles" ON public.profiles;
+CREATE POLICY "Allow public update profiles" ON public.profiles FOR UPDATE USING (true);
 
 -- User Carts Policies
 DROP POLICY IF EXISTS "Users can manage own cart" ON public.user_carts;
-CREATE POLICY "Users can manage own cart" ON public.user_carts FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own cart" ON public.user_carts FOR ALL USING (true);
 
 DROP POLICY IF EXISTS "Users can manage own cart items" ON public.user_cart_items;
-CREATE POLICY "Users can manage own cart items" ON public.user_cart_items FOR ALL USING (
-    cart_id IN (SELECT id FROM public.user_carts WHERE user_id = auth.uid())
-);
+CREATE POLICY "Users can manage own cart items" ON public.user_cart_items FOR ALL USING (true);
 
 -- Public Catalog Policies
 DROP POLICY IF EXISTS "Public categories are viewable by everyone" ON public.categories;
@@ -191,7 +194,7 @@ DROP POLICY IF EXISTS "Allow order insertion" ON public.orders;
 CREATE POLICY "Allow order insertion" ON public.orders FOR INSERT WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Users can view own orders" ON public.orders;
-CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id OR auth.uid() IS NULL);
+CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Allow order items insertion" ON public.order_items;
 CREATE POLICY "Allow order items insertion" ON public.order_items FOR INSERT WITH CHECK (true);

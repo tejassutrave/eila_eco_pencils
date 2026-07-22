@@ -12,7 +12,6 @@ export function AuthProvider({ children }) {
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [loading, setLoading] = useState(true);
 
-  // Helper to retrieve local registered users registry
   const getRegisteredUsers = () => {
     try {
       const usersJson = localStorage.getItem('eila_registered_users');
@@ -70,13 +69,13 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // Create New Account (Sign Up) with Bcrypt Password Hashing & Strict Duplicate Check
+  // Create New Account (Sign Up) with Supabase DB Profile Row Creation & Local Registry
   const signUp = async ({ username, email, password }) => {
     const cleanEmail = email.trim().toLowerCase();
     const cleanUsername = username.trim();
     const registeredUsers = getRegisteredUsers();
 
-    // Check if account already exists with this Email ID or Username
+    // Duplicate check
     const existingUser = registeredUsers.find(
       (u) => u.email === cleanEmail || u.username.toLowerCase() === cleanUsername.toLowerCase()
     );
@@ -88,19 +87,13 @@ export function AuthProvider({ children }) {
       };
     }
 
-    // Hash password with bcrypt
     const passwordHash = bcrypt.hashSync(password, 10);
 
-    const newUserObj = {
-      id: 'usr_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
-      username: cleanUsername,
-      email: cleanEmail,
-      passwordHash
-    };
+    let supabaseUserId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
 
-    // Attempt Supabase Auth signup
+    // 1. Register in Supabase Auth
     try {
-      await supabase.auth.signUp({
+      const { data: authData, error: authErr } = await supabase.auth.signUp({
         email: cleanEmail,
         password,
         options: {
@@ -110,9 +103,35 @@ export function AuthProvider({ children }) {
           }
         }
       });
-    } catch (e) {}
 
-    // Register user in local registry
+      if (authData?.user?.id) {
+        supabaseUserId = authData.user.id;
+      }
+    } catch (e) {
+      console.warn('Supabase Auth Notice:', e.message);
+    }
+
+    // 2. Direct insert/upsert into Supabase `public.profiles` database table
+    try {
+      await supabase.from('profiles').upsert({
+        id: supabaseUserId,
+        username: cleanUsername,
+        full_name: cleanUsername,
+        email: cleanEmail,
+        password_hash: passwordHash,
+        role: 'customer'
+      });
+    } catch (dbErr) {
+      console.warn('Supabase Profile Table write notice:', dbErr.message);
+    }
+
+    const newUserObj = {
+      id: supabaseUserId,
+      username: cleanUsername,
+      email: cleanEmail,
+      passwordHash
+    };
+
     saveRegisteredUsers([...registeredUsers, newUserObj]);
 
     const activeUser = {
@@ -127,12 +146,12 @@ export function AuthProvider({ children }) {
     return { success: true, user: activeUser };
   };
 
-  // Sign In with Strict Credentials & Password Hash Verification
+  // Sign In with Strict Credentials
   const signIn = async ({ email, password }) => {
     const cleanEmail = email.trim().toLowerCase();
     const registeredUsers = getRegisteredUsers();
 
-    // 1. Try Supabase Auth verification
+    // 1. Check Supabase Auth
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
@@ -152,7 +171,7 @@ export function AuthProvider({ children }) {
       }
     } catch (e) {}
 
-    // 2. Strict Local Registered Registry Lookup
+    // 2. Local Registry Lookup
     const existingUser = registeredUsers.find((u) => u.email === cleanEmail);
 
     if (!existingUser) {
@@ -162,7 +181,6 @@ export function AuthProvider({ children }) {
       };
     }
 
-    // Verify bcrypt password hash
     const isPasswordValid = bcrypt.compareSync(password, existingUser.passwordHash);
 
     if (!isPasswordValid) {
