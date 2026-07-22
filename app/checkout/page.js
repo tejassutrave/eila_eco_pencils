@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { ShieldCheck, Lock, ArrowLeft, CheckCircle2, MessageSquare } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { ShieldCheck, Lock, ArrowLeft, CheckCircle2, MessageSquare, LogIn, AlertCircle } from 'lucide-react';
 
 export default function CheckoutPage() {
   const { cart, subtotal, shippingFee, grandTotal, clearCart } = useCart();
+  const { user, openAuthModal } = useAuth();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -21,12 +23,30 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderConfirmed, setOrderConfirmed] = useState(null);
 
+  // Auto-fill user email and name if logged in
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || user.username || '',
+        email: prev.email || user.email || ''
+      }));
+    }
+  }, [user]);
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handlePayment = async (e) => {
     e.preventDefault();
+
+    // STRICT CHECK: User MUST be signed in before confirming order!
+    if (!user) {
+      alert('Authentication Required: Please Sign In or Create an Account to confirm your order.');
+      openAuthModal('login');
+      return;
+    }
 
     if (!formData.name || !formData.email || !formData.phone || !formData.address || !formData.city || !formData.pincode) {
       alert('Please fill in all shipping details before proceeding to payment.');
@@ -103,7 +123,7 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...paymentPayload,
-          customerDetails: formData,
+          customerDetails: { ...formData, userId: user?.id },
           cartItems: cart,
           totalAmount: grandTotal
         })
@@ -197,6 +217,22 @@ export default function CheckoutPage() {
           <span>256-Bit SSL Encrypted Razorpay Checkout</span>
         </div>
       </div>
+
+      {/* Login Required Notice Banner if Guest */}
+      {!user && (
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-3xl flex items-center justify-between gap-4 text-xs">
+          <div className="flex items-center gap-3 text-amber-800 font-semibold">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+            <span>Sign In Required: Please sign in or create an account to complete your order checkout.</span>
+          </div>
+          <button
+            onClick={() => openAuthModal('login')}
+            className="px-4 py-2 bg-[#1b4332] text-white font-bold rounded-full text-xs hover:bg-[#2d6a4f] transition-all shrink-0 flex items-center gap-1.5"
+          >
+            <LogIn className="w-4 h-4" /> Sign In / Register
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         
@@ -306,13 +342,23 @@ export default function CheckoutPage() {
             </div>
 
             <div className="pt-4">
-              <button
-                type="submit"
-                disabled={isProcessing}
-                className="w-full py-4 bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-extrabold text-base rounded-full shadow-xl shadow-[#1b4332]/20 transition-all hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {isProcessing ? 'Connecting to Razorpay...' : `Pay ₹${grandTotal.toFixed(2)} via Razorpay (UPI, Card, NetBanking)`}
-              </button>
+              {!user ? (
+                <button
+                  type="button"
+                  onClick={() => openAuthModal('login')}
+                  className="w-full py-4 bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-extrabold text-base rounded-full shadow-xl transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
+                >
+                  <LogIn className="w-5 h-5" /> Sign In to Confirm & Pay ₹{grandTotal.toFixed(2)}
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={isProcessing}
+                  className="w-full py-4 bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-extrabold text-base rounded-full shadow-xl shadow-[#1b4332]/20 transition-all hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isProcessing ? 'Connecting to Razorpay...' : `Pay ₹${grandTotal.toFixed(2)} via Razorpay (UPI, Card, NetBanking)`}
+                </button>
+              )}
             </div>
 
           </form>
