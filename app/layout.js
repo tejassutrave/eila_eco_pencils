@@ -1,8 +1,10 @@
 import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
+import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import CartDrawer from '@/components/CartDrawer';
+import AuthModal from '@/components/AuthModal';
 import Footer from '@/components/Footer';
 
 const outfit = Outfit({
@@ -38,12 +40,15 @@ export default function RootLayout({ children }) {
         <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
       </head>
       <body className="bg-[#faf9f5] text-[#1a2e26] font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-[#2d6a4f] selection:text-white">
-        <CartProvider>
-          <Navbar />
-          <CartDrawer />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Navbar />
+            <CartDrawer />
+            <AuthModal />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

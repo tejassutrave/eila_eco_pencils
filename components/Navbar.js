@@ -2,12 +2,15 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Leaf, Menu, X, Search, Sparkles } from 'lucide-react';
+import { ShoppingBag, Leaf, Menu, X, Search, Sparkles, User, LogOut, UserCheck } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Navbar() {
   const { totalItemsCount, setIsCartOpen } = useCart();
+  const { user, openAuthModal, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 bg-[#faf9f5]/90 backdrop-blur-md border-b border-[#e8e6da] text-[#1b4332]">
@@ -62,6 +65,41 @@ export default function Navbar() {
               <Search className="w-5 h-5" />
             </Link>
 
+            {/* Auth / Sign In Button */}
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="px-3.5 py-2 bg-[#e8f5e9] border border-[#b7e4c7] hover:bg-[#d8f3dc] text-[#1b4332] rounded-full font-bold text-xs flex items-center gap-2 transition-all"
+                >
+                  <UserCheck className="w-4 h-4 text-[#2d6a4f]" />
+                  <span>{user.username}</span>
+                </button>
+
+                {userDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-[#e8e6da] rounded-2xl shadow-xl p-2 z-50 text-xs font-semibold text-[#1b4332]">
+                    <div className="px-3 py-2 border-b border-[#f0efe6] text-[11px] text-[#4a5e55]">
+                      Logged in as <strong className="block text-[#0f231c] truncate">{user.email}</strong>
+                    </div>
+                    <button
+                      onClick={() => { signOut(); setUserDropdownOpen(false); }}
+                      className="w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-xl flex items-center gap-2 transition-colors mt-1"
+                    >
+                      <LogOut className="w-3.5 h-3.5" /> Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => openAuthModal('login')}
+                className="px-4 py-2.5 bg-white border border-[#e8e6da] hover:bg-[#f0efe6] text-[#1b4332] rounded-full font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+              >
+                <User className="w-4 h-4 text-[#2d6a4f]" />
+                <span>Sign In</span>
+              </button>
+            )}
+
             {/* Cart Button */}
             <button
               onClick={() => setIsCartOpen(true)}
@@ -77,7 +115,7 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* Mobile Hamburger Menu Trigger */}
+            {/* Mobile Menu Trigger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 text-[#1b4332] hover:bg-[#f0efe6] rounded-xl"
@@ -108,9 +146,21 @@ export default function Navbar() {
           <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-xl hover:bg-[#f0efe6]">
             About Us
           </Link>
-          <Link href="/admin/login" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 text-xs text-[#2d6a4f] hover:underline">
-            Admin Portal Login →
-          </Link>
+          {!user ? (
+            <button
+              onClick={() => { openAuthModal('login'); setMobileMenuOpen(false); }}
+              className="w-full text-left py-2 px-3 text-[#2d6a4f] font-bold"
+            >
+              Sign In / Create Account →
+            </button>
+          ) : (
+            <button
+              onClick={() => { signOut(); setMobileMenuOpen(false); }}
+              className="w-full text-left py-2 px-3 text-red-600 font-bold"
+            >
+              Sign Out ({user.username})
+            </button>
+          )}
         </div>
       )}
     </header>

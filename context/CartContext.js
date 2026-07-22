@@ -1,33 +1,41 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
+  const { user } = useAuth();
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Load saved cart from localStorage on mount
+  // Compute unique storage key based on logged in user ID
+  const cartStorageKey = user?.id ? `eila_cart_${user.id}` : 'eila_cart_guest';
+
+  // Load user-specific cart when user or storage key changes
   useEffect(() => {
     try {
-      const savedCart = localStorage.getItem('eila_cart');
+      const savedCart = localStorage.getItem(cartStorageKey);
       if (savedCart) {
         setCart(JSON.parse(savedCart));
+      } else {
+        setCart([]);
       }
     } catch (e) {
-      console.error('Failed to load cart from localStorage:', e);
+      console.error('Failed to load user-specific cart:', e);
+      setCart([]);
     }
-  }, []);
+  }, [cartStorageKey]);
 
-  // Save cart to localStorage on changes
+  // Save cart to user-specific localStorage whenever cart changes
   useEffect(() => {
     try {
-      localStorage.setItem('eila_cart', JSON.stringify(cart));
+      localStorage.setItem(cartStorageKey, JSON.stringify(cart));
     } catch (e) {
-      console.error('Failed to save cart to localStorage:', e);
+      console.error('Failed to save user-specific cart:', e);
     }
-  }, [cart]);
+  }, [cart, cartStorageKey]);
 
   const addToCart = (product, quantity = 1) => {
     setCart((prevCart) => {
@@ -60,6 +68,9 @@ export function CartProvider({ children }) {
 
   const clearCart = () => {
     setCart([]);
+    try {
+      localStorage.removeItem(cartStorageKey);
+    } catch (e) {}
   };
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -81,6 +92,7 @@ export function CartProvider({ children }) {
         totalItemsCount,
         isCartOpen,
         setIsCartOpen,
+        cartStorageKey
       }}
     >
       {children}

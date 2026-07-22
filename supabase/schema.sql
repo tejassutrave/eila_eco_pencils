@@ -5,17 +5,59 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. PROFILES TABLE (Admins)
+-- 1. PROFILES TABLE (Customers & Admins)
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    full_name TEXT NOT NULL,
+    username TEXT UNIQUE,
+    full_name TEXT,
     email TEXT UNIQUE NOT NULL,
-    role TEXT NOT NULL DEFAULT 'admin' CHECK (role IN ('admin', 'super_admin')),
+    role TEXT NOT NULL DEFAULT 'customer' CHECK (role IN ('customer', 'admin', 'super_admin')),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. CATEGORIES TABLE
+-- Trigger to automatically create profile on signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, username, full_name, email, role)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'username', SPLIT_PART(NEW.email, '@', 1)),
+    COALESCE(NEW.raw_user_meta_data->>'full_name', SPLIT_PART(NEW.email, '@', 1)),
+    NEW.email,
+    'customer'
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- 2. USER CARTS TABLE (Per-User Cart Isolation)
+CREATE TABLE IF NOT EXISTS public.user_carts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID UNIQUE NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. USER CART ITEMS TABLE
+CREATE TABLE IF NOT EXISTS public.user_cart_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    cart_id UUID NOT NULL REFERENCES public.user_carts(id) ON DELETE CASCADE,
+    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    product_name TEXT NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    unit_price NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4. CATEGORIES TABLE
 CREATE TABLE IF NOT EXISTS public.categories (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL UNIQUE,
@@ -24,7 +66,7 @@ CREATE TABLE IF NOT EXISTS public.categories (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. PRODUCTS TABLE
+-- 5. PRODUCTS TABLE
 CREATE TABLE IF NOT EXISTS public.products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
@@ -40,7 +82,7 @@ CREATE TABLE IF NOT EXISTS public.products (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. PRODUCT IMAGES TABLE
+-- 6. PRODUCT IMAGES TABLE
 CREATE TABLE IF NOT EXISTS public.product_images (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
@@ -49,10 +91,11 @@ CREATE TABLE IF NOT EXISTS public.product_images (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5. ORDERS TABLE
+-- 7. ORDERS TABLE
 CREATE TABLE IF NOT EXISTS public.orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_number TEXT NOT NULL UNIQUE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
     customer_name TEXT NOT NULL,
     customer_email TEXT NOT NULL,
     customer_phone TEXT NOT NULL,
@@ -69,7 +112,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. ORDER ITEMS TABLE
+-- 8. ORDER ITEMS TABLE
 CREATE TABLE IF NOT EXISTS public.order_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_id UUID NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
@@ -79,7 +122,7 @@ CREATE TABLE IF NOT EXISTS public.order_items (
     unit_price NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0)
 );
 
--- 7. CORPORATE & BULK INQUIRIES TABLE
+-- 9. CORPORATE & BULK INQUIRIES TABLE
 CREATE TABLE IF NOT EXISTS public.inquiries (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
@@ -92,15 +135,16 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- INDEXES FOR FAST QUERYING
+-- INDEXES
 CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_slug ON public.products(slug);
-CREATE INDEX IF NOT EXISTS idx_products_active ON public.products(active);
-CREATE INDEX IF NOT EXISTS idx_orders_order_number ON public.orders(order_number);
-CREATE INDEX IF NOT EXISTS idx_orders_customer_email ON public.orders(customer_email);
-CREATE INDEX IF NOT EXISTS idx_order_items_order ON public.order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_orders_user ON public.orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_carts_user ON public.user_carts(user_id);
 
 -- ROW LEVEL SECURITY (RLS) POLICIES
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_carts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_cart_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.product_images ENABLE ROW LEVEL SECURITY;
@@ -108,17 +152,28 @@ ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
 
--- Anonymous public read access for active categories, products & images
+-- Profiles: Users can view and update their own profile
+CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+
+-- User Carts: Isolated strictly to the authenticated user
+CREATE POLICY "Users can manage own cart" ON public.user_carts FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own cart items" ON public.user_cart_items FOR ALL USING (
+    cart_id IN (SELECT id FROM public.user_carts WHERE user_id = auth.uid())
+);
+
+-- Public Product Read
 CREATE POLICY "Public categories are viewable by everyone" ON public.categories FOR SELECT USING (true);
 CREATE POLICY "Active products are viewable by everyone" ON public.products FOR SELECT USING (active = true);
 CREATE POLICY "Product images are viewable by everyone" ON public.product_images FOR SELECT USING (true);
 
--- Allow public checkout order insertion
-CREATE POLICY "Allow public order insertion" ON public.orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public order items insertion" ON public.order_items FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public inquiries insertion" ON public.inquiries FOR INSERT WITH CHECK (true);
+-- Orders: Users can insert orders and view their own orders
+CREATE POLICY "Allow order insertion" ON public.orders FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id OR auth.uid() IS NULL);
+CREATE POLICY "Allow order items insertion" ON public.order_items FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow inquiries insertion" ON public.inquiries FOR INSERT WITH CHECK (true);
 
--- SAMPLE SEED DATA
+-- SEED DATA
 INSERT INTO public.categories (name, slug, description) VALUES
 ('Plantable Seed Pencils', 'plantable-seed-pencils', 'Pencils embedded with non-GMO plant seeds at the end capsule that grow into herbs, flowers & vegetables.'),
 ('Recycled Newspaper Pencils', 'recycled-newspaper-pencils', 'Pencils made from 100% recycled old newspapers without using any wood or tree harm.'),
