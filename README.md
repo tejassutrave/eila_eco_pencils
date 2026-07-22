@@ -1,88 +1,105 @@
-# 🌿 Eila Eco Pencils — Sustainable E-Commerce Platform
+# 🌿 Eila Eco Pencils — Write, Plant & Grow Greenery!
 
-A production-ready, full-stack e-commerce web application built for **Eila Eco Pencils**, promoting 100% tree-free plantable seed pencils and recycled newspaper stationery across India.
-
-Designed according to the complete specification docs in [`/docs`](file:///c:/Projects/eila/docs) and optimized for 100% free unified deployment on **Vercel** with **Supabase PostgreSQL** and **Razorpay Payments**.
-
----
-
-## 📄 Documentation Traceability Matrix
-
-This codebase fully implements and satisfies all requirements from the 8 official specification documents:
-
-1. [01_Eila_Eco_Pencils_Vision_Document.pdf](file:///c:/Projects/eila/docs/01_Eila_Eco_Pencils_Vision_Document.pdf) — Core vision, eco objectives & success criteria.
-2. [02_Eila_Eco_Pencils_PRD.pdf](file:///c:/Projects/eila/docs/02_Eila_Eco_Pencils_PRD.pdf) — Functional requirements, customer/admin journeys & business rules.
-3. [03_Eila_Eco_Pencils_TRD.pdf](file:///c:/Projects/eila/docs/03_Eila_Eco_Pencils_TRD.pdf) — High-level architecture, payment flow & security specifications.
-4. [04_Eila_Eco_Pencils_Database_Design_Document.pdf](file:///c:/Projects/eila/docs/04_Eila_Eco_Pencils_Database_Design_Document.pdf) — 3NF PostgreSQL database design & RLS policies in [`/supabase/schema.sql`](file:///c:/Projects/eila/supabase/schema.sql).
-5. [05_Eila_Eco_Pencils_API_Documentation.pdf](file:///c:/Projects/eila/docs/05_Eila_Eco_Pencils_API_Documentation.pdf) — REST API endpoints (`/api/v1/products`, `/api/v1/payment/*`, `/api/v1/inquiry`).
-6. [06_Eila_Eco_Pencils_UI_UX_Design_Specification.pdf](file:///c:/Projects/eila/docs/06_Eila_Eco_Pencils_UI_UX_Design_Specification.pdf) — Design system, color tokens, typography & component library.
-7. [07_Eila_Eco_Pencils_Testing_Documentation.pdf](file:///c:/Projects/eila/docs/07_Eila_Eco_Pencils_Testing_Documentation.pdf) — Functional test cases, Razorpay sandbox testing, and acceptance verification.
-8. [09_Eila_Eco_Pencils_Application_Flow_Document.pdf](file:///c:/Projects/eila/docs/09_Eila_Eco_Pencils_Application_Flow_Document.pdf) — End-to-end customer, admin & inventory workflows.
+> **India's Leading Sustainable & Plantable Stationery Brand**  
+> *Crafted from 100% recycled newsprint paper without cutting a single tree. Embedded with organic non-GMO seeds that sprout into tomato, basil, marigold, chilli & sunflower!*
 
 ---
 
-## 🛠️ Technology Stack
+## ✨ Welcome to Eila Eco Pencils
 
-* **Frontend:** Next.js (App Router), React 19, Tailwind CSS, Lucide Icons, Outfit + Inter Google Fonts.
-* **Backend:** Vercel Serverless API Routes (`/api/*`).
-* **Database & Auth:** Supabase PostgreSQL (RLS enabled), Supabase Auth.
-* **Payments:** Razorpay (INR payments, UPI, NetBanking, Cards) with HMAC-SHA256 signature verification.
-* **Messaging:** Instant WhatsApp Order Receipt confirmation generator.
+Every year, millions of trees are felled to produce traditional wooden pencils. **Eila Eco Pencils** transforms waste into greenery by manufacturing high-quality, tree-free recycled newspaper pencils and plantable seed pencils that give back to mother earth.
+
+When your pencil becomes too short to write, don't throw it away — **plant it in soil, water it, and watch your pencil sprout into edible herbs and blooming flowers!**
 
 ---
 
-## 🚀 Getting Started
+## 🌟 Key Website Features
 
-### 1. Prerequisites
-- Node.js 18.x or higher
-- npm 9.x or higher
+### 🛍️ Customer Storefront & Catalog
+* **Plantable Seed Pencils (Pack of 10):** Extra dark HB lead coated in velvet-touch finish with biodegradable seed capsules.
+* **Rainbow Recycled Newspaper Pencils (Pack of 10):** Handcrafted from 100% post-consumer newsprint paper revealing colorful rainbow layers when sharpened.
+* **Deluxe Corporate Eco Gifting Combo:** Premium gifting boxes complete with plantable seed notepad and bamboo ruler.
 
-### 2. Environment Setup
-Copy `.env.example` to `.env.local`:
+### 👤 Member Accounts & Secure Shopping
+* **User Accounts & Sign In:** Create a personal account to save items securely in your personal shopping cart across devices.
+* **Per-User Cart Isolation:** Logged-in users see only their personal items; signing out wipes local memory for total privacy.
+
+### 💳 Pan-India Fast Checkout & Payments
+* **Razorpay Payment Gateway:** Secure online payments supporting UPI (Google Pay, PhonePe, Paytm), Credit/Debit Cards, and NetBanking.
+* **WhatsApp Order Receipts:** Instant pre-filled WhatsApp receipt generator connecting customers directly to delivery updates.
+
+### 🏢 Corporate & Bulk Gifting Portal
+* **Custom Brand Customization:** Custom logo printing and bulk packaging options for corporate events, schools, and weddings.
+* **Inquiry Lead Pipeline:** Direct bulk quote request form with immediate team response.
+
+### 📊 Executive Admin & Analytics Center
+* **Live Revenue Analytics:** Real-time monthly sales performance charts, average order values (AOV), and conversion rates.
+* **Inventory Control:** Stock level tracking with low-stock alerts.
+* **Order & Inquiry Management:** End-to-end order status tracking (`Processing` → `Shipped` → `Delivered`).
+
+---
+
+## 🌎 Our Sustainability Impact
+
+| Metric | Achievement |
+| :--- | :--- |
+| 🌳 **Trees Saved** | 100,000+ Trees Preserved |
+| 🌱 **Seeds Planted** | 50,000+ Organic Seeds Sprouted |
+| 😊 **Happy Buyers** | 4.9★ Average Customer Rating |
+| 🚚 **Free Shipping** | On all Pan-India orders above ₹499 |
+
+---
+
+## 🛠️ Technology Highlights
+
+* **Frontend:** Next.js (App Router), React, Tailwind CSS, Lucide Icons.
+* **Database & Security:** Supabase PostgreSQL with Row Level Security (RLS) & Bcrypt Password Hashing.
+* **Payments:** Razorpay Gateway (256-Bit SSL Encrypted).
+* **Hosting:** Vercel Global Serverless Edge Network.
+
+---
+
+## 🚀 Quick Setup Guide
+
+### 1. Clone & Install Dependencies
 ```bash
-cp .env.example .env.local
+git clone https://github.com/tejassutrave/eila_eco_pencils.git
+cd eila_eco_pencils
+npm install
 ```
 
-Fill in your Supabase & Razorpay credentials:
+### 2. Configure Environment Variables (`.env.local`)
+Create `.env.local` in your root folder:
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 
-NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_your_key_id
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_secret
-
-NEXT_PUBLIC_COMPANY_WHATSAPP=919876543210
 ```
 
-### 3. Database Migration
-Run the contents of [`supabase/schema.sql`](file:///c:/Projects/eila/supabase/schema.sql) in your Supabase SQL Editor to create tables, indexes, seed data, and Row Level Security policies.
+### 3. Setup Database Schema
+Copy and run [`supabase/schema.sql`](file:///c:/Projects/eila/supabase/schema.sql) in your Supabase SQL Editor.
 
-### 4. Development Server
-Run the local dev server:
+### 4. Run Locally
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open **[http://localhost:3000](http://localhost:3000)** in your browser!
 
 ---
 
-## 🌐 API Endpoint Catalog
+## 📜 Project Documentation
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/v1/products` | Retrieve active eco products catalog |
-| `GET` | `/api/v1/categories` | Retrieve eco stationery categories |
-| `POST` | `/api/v1/payment/create-order` | Create server-side Razorpay order |
-| `POST` | `/api/v1/payment/verify` | Verify Razorpay HMAC signature & persist order |
-| `POST` | `/api/v1/inquiry` | Submit corporate & school bulk quote request |
+All detailed project specifications, wireframes, and design guidelines are available in the [`/docs`](file:///c:/Projects/eila/docs) folder:
+
+* [01_Eila_Eco_Pencils_SRS_Document.pdf](file:///c:/Projects/eila/docs/01_Eila_Eco_Pencils_SRS_Document.pdf) — Software Requirements Specification.
+* [02_Eila_Eco_Pencils_Architecture_Document.pdf](file:///c:/Projects/eila/docs/02_Eila_Eco_Pencils_Architecture_Document.pdf) — System Architecture & Flow.
+* [04_Eila_Eco_Pencils_Database_Design.pdf](file:///c:/Projects/eila/docs/04_Eila_Eco_Pencils_Database_Design.pdf) — Database ER Diagrams & Schema.
+* [06_Eila_Eco_Pencils_UI_UX_Design_Specification.pdf](file:///c:/Projects/eila/docs/06_Eila_Eco_Pencils_UI_UX_Design_Specification.pdf) — Dribbble Eco Design Guidelines.
 
 ---
 
-## 📦 Production Build & Validation
-
-To test the production build locally:
-```bash
-npm run build
-npm run start
-```
+### 💚 Join the Eco Revolution
+*Plant a pencil today, grow a garden tomorrow!*
