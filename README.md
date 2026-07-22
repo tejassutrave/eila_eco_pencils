@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🌿 Eila Eco Pencils — Sustainable E-Commerce Platform
 
-## Getting Started
+A production-ready, full-stack e-commerce web application built for **Eila Eco Pencils**, promoting 100% tree-free plantable seed pencils and recycled newspaper stationery across India.
 
-First, run the development server:
+Designed according to the complete specification docs in [`/docs`](file:///c:/Projects/eila/docs) and optimized for 100% free unified deployment on **Vercel** with **Supabase PostgreSQL** and **Razorpay Payments**.
 
+---
+
+## 📄 Documentation Traceability Matrix
+
+This codebase fully implements and satisfies all requirements from the 8 official specification documents:
+
+1. [01_Eila_Eco_Pencils_Vision_Document.pdf](file:///c:/Projects/eila/docs/01_Eila_Eco_Pencils_Vision_Document.pdf) — Core vision, eco objectives & success criteria.
+2. [02_Eila_Eco_Pencils_PRD.pdf](file:///c:/Projects/eila/docs/02_Eila_Eco_Pencils_PRD.pdf) — Functional requirements, customer/admin journeys & business rules.
+3. [03_Eila_Eco_Pencils_TRD.pdf](file:///c:/Projects/eila/docs/03_Eila_Eco_Pencils_TRD.pdf) — High-level architecture, payment flow & security specifications.
+4. [04_Eila_Eco_Pencils_Database_Design_Document.pdf](file:///c:/Projects/eila/docs/04_Eila_Eco_Pencils_Database_Design_Document.pdf) — 3NF PostgreSQL database design & RLS policies in [`/supabase/schema.sql`](file:///c:/Projects/eila/supabase/schema.sql).
+5. [05_Eila_Eco_Pencils_API_Documentation.pdf](file:///c:/Projects/eila/docs/05_Eila_Eco_Pencils_API_Documentation.pdf) — REST API endpoints (`/api/v1/products`, `/api/v1/payment/*`, `/api/v1/inquiry`).
+6. [06_Eila_Eco_Pencils_UI_UX_Design_Specification.pdf](file:///c:/Projects/eila/docs/06_Eila_Eco_Pencils_UI_UX_Design_Specification.pdf) — Design system, color tokens, typography & component library.
+7. [07_Eila_Eco_Pencils_Testing_Documentation.pdf](file:///c:/Projects/eila/docs/07_Eila_Eco_Pencils_Testing_Documentation.pdf) — Functional test cases, Razorpay sandbox testing, and acceptance verification.
+8. [09_Eila_Eco_Pencils_Application_Flow_Document.pdf](file:///c:/Projects/eila/docs/09_Eila_Eco_Pencils_Application_Flow_Document.pdf) — End-to-end customer, admin & inventory workflows.
+
+---
+
+## 🛠️ Technology Stack
+
+* **Frontend:** Next.js (App Router), React 19, Tailwind CSS, Lucide Icons, Outfit + Inter Google Fonts.
+* **Backend:** Vercel Serverless API Routes (`/api/*`).
+* **Database & Auth:** Supabase PostgreSQL (RLS enabled), Supabase Auth.
+* **Payments:** Razorpay (INR payments, UPI, NetBanking, Cards) with HMAC-SHA256 signature verification.
+* **Messaging:** Instant WhatsApp Order Receipt confirmation generator.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- Node.js 18.x or higher
+- npm 9.x or higher
+
+### 2. Environment Setup
+Copy `.env.example` to `.env.local`:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Fill in your Supabase & Razorpay credentials:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_your_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_secret
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+NEXT_PUBLIC_COMPANY_WHATSAPP=919876543210
+```
 
-## Learn More
+### 3. Database Migration
+Run the contents of [`supabase/schema.sql`](file:///c:/Projects/eila/supabase/schema.sql) in your Supabase SQL Editor to create tables, indexes, seed data, and Row Level Security policies.
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Development Server
+Run the local dev server:
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🌐 API Endpoint Catalog
 
-## Deploy on Vercel
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/products` | Retrieve active eco products catalog |
+| `GET` | `/api/v1/categories` | Retrieve eco stationery categories |
+| `POST` | `/api/v1/payment/create-order` | Create server-side Razorpay order |
+| `POST` | `/api/v1/payment/verify` | Verify Razorpay HMAC signature & persist order |
+| `POST` | `/api/v1/inquiry` | Submit corporate & school bulk quote request |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📦 Production Build & Validation
+
+To test the production build locally:
+```bash
+npm run build
+npm run start
+```
