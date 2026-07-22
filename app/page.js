@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Leaf, ArrowRight, Sparkles, Sprout, CheckCircle2, Trees, ShieldCheck, Heart, Star, Award } from 'lucide-react';
 import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from '@/lib/supabase';
 import ProductCard from '@/components/ProductCard';
+import InteractivePlantSimulator from '@/components/InteractivePlantSimulator';
+import ImpactCalculator from '@/components/ImpactCalculator';
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -104,7 +106,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. HOW PLANTABLE SEED PENCILS WORK */}
+      {/* 2. INTERACTIVE PLANT & SEED SIMULATOR */}
+      <InteractivePlantSimulator />
+
+      {/* 3. INTERACTIVE FOREST IMPACT CALCULATOR */}
+      <ImpactCalculator />
+
+      {/* 4. HOW PLANTABLE SEED PENCILS WORK */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e8f5e9] text-[#1b4332] text-xs font-bold">
@@ -155,7 +163,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. FEATURED PRODUCTS CATALOG GRID */}
+      {/* 5. FEATURED PRODUCTS CATALOG GRID */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -198,7 +206,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. CORPORATE & BULK ORDERS BANNER */}
+      {/* 6. CORPORATE & BULK ORDERS BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-[#1b4332] text-white rounded-[2.5rem] p-8 sm:p-14 border border-[#2d6a4f] shadow-2xl relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
           
