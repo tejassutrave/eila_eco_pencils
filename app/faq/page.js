@@ -101,7 +101,7 @@ export default function FAQPage() {
           <p className="text-xs text-[#d8f3dc]">Our eco team is here to help you via WhatsApp or Email 7 days a week!</p>
         </div>
         <a
-          href="https://wa.me/919876543210"
+          href="https://wa.me/918971456552"
           target="_blank"
           rel="noopener noreferrer"
           className="px-6 py-3.5 bg-[#52b788] hover:bg-[#40916c] text-white font-black text-xs rounded-full inline-flex items-center gap-2 shadow-lg shrink-0 transition-transform hover:scale-105"

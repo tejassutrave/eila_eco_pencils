@@ -35,7 +35,7 @@ export default function ContactPage() {
             <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
             <div>
               <strong className="block text-white">WhatsApp & Support</strong>
-              <span>+91 98765 43210</span>
+              <span>+91 89714 56552</span>
             </div>
           </div>
 

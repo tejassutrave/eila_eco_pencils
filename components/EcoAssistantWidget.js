@@ -130,7 +130,7 @@ export default function EcoAssistantWidget() {
           <div className="p-3 bg-white border-t border-[#e8e6da] flex items-center justify-between text-xs">
             <span className="text-[#4a5e55] text-[11px]">Need custom help?</span>
             <a
-              href="https://wa.me/919876543210"
+              href="https://wa.me/918971456552"
               target="_blank"
               rel="noopener noreferrer"
               className="px-3 py-1.5 bg-[#52b788] hover:bg-[#40916c] text-white font-extrabold rounded-full text-[11px] inline-flex items-center gap-1"
