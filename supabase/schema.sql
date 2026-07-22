@@ -1,12 +1,13 @@
 -- ==========================================
 -- Eila Eco Pencils - Supabase Database Schema
 -- Run this ENTIRE file from line 1 in SQL Editor
+-- (100% Idempotent - Safe to run multiple times)
 -- ==========================================
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. PROFILES TABLE (Customers & Admins with Bcrypt Password Hash)
+-- 1. PROFILES TABLE (Customers & Admins)
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     username TEXT UNIQUE NOT NULL,
@@ -42,26 +43,7 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- 2. USER CARTS TABLE (Per-User Cart Isolation)
-CREATE TABLE IF NOT EXISTS public.user_carts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID UNIQUE NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 3. USER CART ITEMS TABLE
-CREATE TABLE IF NOT EXISTS public.user_cart_items (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    cart_id UUID NOT NULL REFERENCES public.user_carts(id) ON DELETE CASCADE,
-    product_id UUID,
-    product_name TEXT NOT NULL,
-    quantity INTEGER NOT NULL CHECK (quantity > 0),
-    unit_price NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0),
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 4. CATEGORIES TABLE
+-- 2. CATEGORIES TABLE
 CREATE TABLE IF NOT EXISTS public.categories (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL UNIQUE,
@@ -70,7 +52,7 @@ CREATE TABLE IF NOT EXISTS public.categories (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5. PRODUCTS TABLE
+-- 3. PRODUCTS TABLE
 CREATE TABLE IF NOT EXISTS public.products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
@@ -86,10 +68,24 @@ CREATE TABLE IF NOT EXISTS public.products (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Foreign key for user_cart_items referencing products
-ALTER TABLE public.user_cart_items 
-  ADD CONSTRAINT fk_user_cart_items_product 
-  FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE;
+-- 4. USER CARTS TABLE (Per-User Cart Isolation)
+CREATE TABLE IF NOT EXISTS public.user_carts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID UNIQUE NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5. USER CART ITEMS TABLE
+CREATE TABLE IF NOT EXISTS public.user_cart_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    cart_id UUID NOT NULL REFERENCES public.user_carts(id) ON DELETE CASCADE,
+    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    product_name TEXT NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    unit_price NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
 -- 6. PRODUCT IMAGES TABLE
 CREATE TABLE IF NOT EXISTS public.product_images (
