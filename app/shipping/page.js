@@ -2,46 +2,90 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Truck, Clock, ShieldCheck, MapPin, ArrowLeft } from 'lucide-react';
+import { Truck, Clock, ShieldCheck, ArrowLeft, PackageCheck, MapPin, Sparkles } from 'lucide-react';
 
 export default function ShippingPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 space-y-8">
-      <Link href="/shop" className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+      
+      {/* Back Link */}
+      <Link href="/" className="inline-flex items-center gap-2 text-xs font-bold text-[#2d6a4f] hover:text-[#1b4332] transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to Store
       </Link>
 
-      <div className="space-y-2">
-        <h1 className="text-3xl font-extrabold text-white">Shipping & Delivery Information</h1>
-        <p className="text-xs text-emerald-300">Pan-India eco-friendly packaging and dispatch policy</p>
+      {/* Page Header */}
+      <div className="space-y-3 text-center sm:text-left">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#e8f5e9] border border-[#b7e4c7] text-[#1b4332] text-xs font-extrabold">
+          <Truck className="w-4 h-4 text-[#52b788]" />
+          <span>Pan-India Dispatch & Delivery Policy</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-black text-[#0f231c] tracking-tight">
+          Shipping & Delivery Information 🚚
+        </h1>
+        <p className="text-sm text-[#4a5e55] max-w-2xl">
+          Fast, eco-friendly, 100% plastic-free packaging dispatched across India.
+        </p>
       </div>
 
-      <div className="bg-emerald-900/40 border border-emerald-800 rounded-3xl p-6 sm:p-8 space-y-6 text-xs text-emerald-200 leading-relaxed">
-        <div className="space-y-2">
-          <h3 className="font-bold text-sm text-white flex items-center gap-2">
-            <Truck className="w-4 h-4 text-emerald-400" /> Free Shipping Threshold
-          </h3>
-          <p>We offer <strong>FREE Shipping across India</strong> on all retail orders above <strong>₹499</strong>. For orders below ₹499, a flat shipping fee of ₹49 applies.</p>
+      {/* Delivery Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-3 shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 rounded-2xl bg-[#e8f5e9] text-[#1b4332] flex items-center justify-center font-bold">
+            <Sparkles className="w-6 h-6 text-amber-500" />
+          </div>
+          <h3 className="font-extrabold text-base text-[#0f231c]">Free Shipping</h3>
+          <p className="text-xs text-[#3b5247] leading-relaxed">
+            Free shipping across India on all retail orders above <strong>₹499</strong>. Flat ₹49 delivery fee applies on smaller orders.
+          </p>
         </div>
 
-        <div className="space-y-2 border-t border-emerald-800/80 pt-4">
-          <h3 className="font-bold text-sm text-white flex items-center gap-2">
-            <Clock className="w-4 h-4 text-amber-400" /> Dispatch & Delivery Timelines
-          </h3>
-          <ul className="list-disc pl-5 space-y-1 text-emerald-300">
-            <li><strong>Order Dispatch:</strong> Orders are dispatched from our Bengaluru warehouse within 24 to 48 hours of payment verification.</li>
-            <li><strong>Metro Cities:</strong> Delivered within 2–4 business days.</li>
-            <li><strong>Rest of India:</strong> Delivered within 4–7 business days.</li>
-          </ul>
+        <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-3 shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 rounded-2xl bg-[#e8f5e9] text-[#1b4332] flex items-center justify-center font-bold">
+            <Clock className="w-6 h-6 text-[#2d6a4f]" />
+          </div>
+          <h3 className="font-extrabold text-base text-[#0f231c]">Fast 24-48 hr Dispatch</h3>
+          <p className="text-xs text-[#3b5247] leading-relaxed">
+            Orders are processed and dispatched from our Bengaluru warehouse within 24 to 48 hours of payment verification.
+          </p>
         </div>
 
-        <div className="space-y-2 border-t border-emerald-800/80 pt-4">
-          <h3 className="font-bold text-sm text-white flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-teal-300" /> 100% Plastic-Free Packaging
-          </h3>
-          <p>All items are shipped using 100% plastic-free recycled paper bubble wraps and kraft tape to ensure your order arrives safely while remaining true to our zero-waste mission.</p>
+        <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-3 shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 rounded-2xl bg-[#e8f5e9] text-[#1b4332] flex items-center justify-center font-bold">
+            <PackageCheck className="w-6 h-6 text-[#52b788]" />
+          </div>
+          <h3 className="font-extrabold text-base text-[#0f231c]">100% Zero Plastic</h3>
+          <p className="text-xs text-[#3b5247] leading-relaxed">
+            Shipped using 100% plastic-free recycled paper bubble wraps and organic kraft paper tape to ensure zero waste.
+          </p>
+        </div>
+
+      </div>
+
+      {/* Detailed Delivery Timelines Table Card */}
+      <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+        <h3 className="font-extrabold text-xl text-[#0f231c] flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-[#2d6a4f]" /> Estimated Delivery Timelines
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#e8e6da] space-y-1">
+            <span className="font-extrabold text-[#0f231c] text-sm block">Metro Cities (Bengaluru, Mumbai, Delhi, Chennai, Hyderabad)</span>
+            <span className="text-[#2d6a4f] font-bold block">Delivered in 2 – 4 Business Days</span>
+          </div>
+
+          <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#e8e6da] space-y-1">
+            <span className="font-extrabold text-[#0f231c] text-sm block">Rest of India & Tier-2/3 Towns</span>
+            <span className="text-[#2d6a4f] font-bold block">Delivered in 4 – 7 Business Days</span>
+          </div>
+        </div>
+
+        <div className="p-4 bg-[#e8f5e9] rounded-2xl border border-[#b7e4c7] text-xs text-[#1b4332] flex items-center gap-3">
+          <ShieldCheck className="w-5 h-5 text-[#2d6a4f] shrink-0" />
+          <span>Real-time courier tracking links are sent via SMS and WhatsApp as soon as your parcel is dispatched!</span>
         </div>
       </div>
+
     </div>
   );
 }
