@@ -47,8 +47,9 @@ export function AuthProvider({ children }) {
         }
       } catch (e) {
         console.warn('Auth check notice:', e.message);
-      } font-medium;
-      setLoading(false);
+      } finally {
+        setLoading(false);
+      }
     };
 
     checkSession();
