@@ -16,12 +16,11 @@ export default function HomePage() {
   return (
     <div className="space-y-24 pb-20">
       
-      {/* 1. HERO SECTION (Off-white / Warm Cream Dribbble Style) */}
-      <section className="relative overflow-hidden pt-12 pb-20 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#faf9f5] via-[#f4f3ed] to-[#faf9f5]">
+      {/* 1. HERO SECTION (Clean Off-white Dribbble Style) */}
+      <section className="relative overflow-hidden pt-12 pb-20 md:py-24 px-4 sm:px-6 lg:px-8 bg-[#faf9f5]">
         
-        {/* Soft Organic Glows */}
+        {/* Soft Organic Glow */}
         <div className="absolute top-1/4 left-10 w-96 h-96 bg-[#52b788]/10 blur-3xl rounded-full pointer-events-none" />
-        <div className="absolute top-10 right-10 w-80 h-80 bg-amber-400/10 blur-3xl rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
           
@@ -34,7 +33,7 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0f231c] leading-[1.15]">
-              Don’t Throw Away Your Pencils — <span className="text-[#2d6a4f] underline decoration-[#52b788]/50 decoration-wavy decoration-2">Plant Them!</span> 🌿
+              Don’t Throw Away Your Pencils — <span className="text-[#2d6a4f]">Plant Them!</span> 🌿
             </h1>
 
             <p className="text-[#3b5247] text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
@@ -79,10 +78,10 @@ export default function HomePage() {
           <div className="lg:col-span-5 relative mx-auto max-w-md lg:max-w-none">
             <div className="relative bg-white p-4 sm:p-5 rounded-[2.5rem] border border-[#e8e6da] shadow-2xl">
               
-              <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-md">
+              <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-md bg-[#faf9f5]">
                 <img
-                  src="https://images.unsplash.com/photo-1585336261026-8f5786372966?auto=format&fit=crop&q=80&w=1000"
-                  alt="Eila Plantable Seed Pencils"
+                  src="/hero_seed_pencils.png"
+                  alt="Eila Eco Seed Pencils"
                   className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
                 />
                 
