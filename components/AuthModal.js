@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, User, Mail, Lock, UserPlus, LogIn } from 'lucide-react';
+import { X, User, Mail, Lock, UserPlus, LogIn, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function AuthModal() {
@@ -33,23 +33,27 @@ export default function AuthModal() {
     try {
       if (authMode === 'signup') {
         if (!username || !email || !password) {
-          setErrorMsg('Please fill in all fields (Username, Email ID, Password)');
+          setErrorMsg('Please fill in all required fields (Username, Email ID, Password).');
           setLoading(false);
           return;
         }
         const res = await signUp({ username, email, password });
-        if (!res.success) setErrorMsg('Failed to create account');
+        if (!res.success) {
+          setErrorMsg(res.error || 'Failed to create account.');
+        }
       } else {
         if (!email || !password) {
-          setErrorMsg('Please enter Email ID and Password');
+          setErrorMsg('Please enter both your Email ID and Password.');
           setLoading(false);
           return;
         }
         const res = await signIn({ email, password });
-        if (!res.success) setErrorMsg('Failed to sign in');
+        if (!res.success) {
+          setErrorMsg(res.error || 'Invalid credentials. Account does not exist or password is incorrect.');
+        }
       }
     } catch (err) {
-      setErrorMsg(err.message || 'Authentication error');
+      setErrorMsg(err.message || 'Authentication error occurred.');
     } finally {
       setLoading(false);
     }
@@ -83,8 +87,8 @@ export default function AuthModal() {
           </h3>
           <p className="text-xs text-[#4a5e55]">
             {authMode === 'signup'
-              ? 'Sign up to keep your shopping cart saved to your personal account!'
-              : 'Sign in to access your personal shopping cart & order history.'}
+              ? 'Create your account to save items to your personal shopping cart!'
+              : 'Sign in to access your saved cart items & account settings.'}
           </p>
         </div>
 
@@ -108,9 +112,11 @@ export default function AuthModal() {
           </button>
         </div>
 
+        {/* Error Feedback Message */}
         {errorMsg && (
-          <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-semibold text-center">
-            {errorMsg}
+          <div className="p-3.5 bg-red-50 border border-red-200 text-red-600 rounded-2xl text-xs font-bold text-center flex items-center justify-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+            <span>{errorMsg}</span>
           </div>
         )}
 
@@ -125,7 +131,7 @@ export default function AuthModal() {
                 <input
                   type="text"
                   required
-                  autoComplete="new-username"
+                  autoComplete="off"
                   placeholder="e.g. eco_lover"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -142,7 +148,7 @@ export default function AuthModal() {
               <input
                 type="email"
                 required
-                autoComplete="new-email"
+                autoComplete="off"
                 placeholder="yourname@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -172,16 +178,16 @@ export default function AuthModal() {
             disabled={loading}
             className="w-full py-3.5 bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-extrabold text-xs rounded-full shadow-lg shadow-[#1b4332]/20 transition-all hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            {loading ? 'Processing...' : authMode === 'signup' ? 'Create My Account →' : 'Sign In Now →'}
+            {loading ? 'Verifying Credentials...' : authMode === 'signup' ? 'Create My Account →' : 'Sign In Now →'}
           </button>
 
         </form>
 
         <div className="text-center text-xs text-[#4a5e55]">
           {authMode === 'signup' ? (
-            <p>Already have an account? <button onClick={() => setAuthMode('login')} className="text-[#1b4332] font-bold hover:underline">Sign In</button></p>
+            <p>Already have an account? <button onClick={() => { setAuthMode('login'); setErrorMsg(''); }} className="text-[#1b4332] font-bold hover:underline">Sign In</button></p>
           ) : (
-            <p>New to Eila Eco Pencils? <button onClick={() => setAuthMode('signup')} className="text-[#1b4332] font-bold hover:underline">Create Account</button></p>
+            <p>New to Eila Eco Pencils? <button onClick={() => { setAuthMode('signup'); setErrorMsg(''); }} className="text-[#1b4332] font-bold hover:underline">Create Account</button></p>
           )}
         </div>
 

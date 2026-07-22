@@ -6,12 +6,13 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. PROFILES TABLE (Customers & Admins)
+-- 1. PROFILES TABLE (Customers & Admins with Bcrypt Password Hash)
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    username TEXT UNIQUE,
+    username TEXT UNIQUE NOT NULL,
     full_name TEXT,
     email TEXT UNIQUE NOT NULL,
+    password_hash TEXT,
     role TEXT NOT NULL DEFAULT 'customer' CHECK (role IN ('customer', 'admin', 'super_admin')),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -141,7 +142,8 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- INDEXES FOR FAST PERFORMANCE
+-- INDEXES
+CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
 CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_slug ON public.products(slug);
 CREATE INDEX IF NOT EXISTS idx_orders_user ON public.orders(user_id);
@@ -206,6 +208,6 @@ ON CONFLICT (name) DO NOTHING;
 
 INSERT INTO public.products (category_id, name, slug, sku, price, stock, description, features, active) VALUES
 ((SELECT id FROM public.categories WHERE slug='plantable-seed-pencils'), 'Velvet Plantable Seed Pencils (Pack of 10)', 'velvet-plantable-seed-pencils-pack-10', 'EILA-SEED-10', 249.00, 150, 'Velvet coated extra smooth dark HB pencils embedded with 5 varieties of seeds: Tomato, Chilli, Basil, Marigold, and Sunflower.', '["Zero wood used", "100% biodegradable seed capsule", "Smooth dark 2B lead", "Plant it when too short to write"]'::jsonb, true),
-((SELECT id FROM public.categories WHERE slug='recycled-newspaper-pencils'), 'Rainbow Recycled Newspaper Pencils (Pack of 10)', 'rainbow-recycled-newspaper-pencils-pack-10', 'EILA-NEWS-10', 199.00, 200, 'Handcrafted from 100% recycled newsprint paper. Each pencil reveals beautiful colorful paper layers when sharpened.', '["Saves trees & forests", "Extra dark smooth lead", "Easy to sharpen", "Non-toxic organic dye"]'::jsonb, true),
-((SELECT id FROM public.categories WHERE slug='eco-stationery-gift-sets'), 'Deluxe Corporate Eco Gifting Combo', 'deluxe-corporate-eco-gifting-combo', 'EILA-GIFT-DELUXE', 499.00, 75, 'Premium eco-friendly gifting set containing 5 seed pencils, 5 newspaper pencils, 1 plantable seed notepad, and a bamboo ruler.', '["Includes Seed Notepad & Bamboo Ruler", "Custom branding available", "Eco-friendly kraft packaging", "Great for corporate events & schools"]'::jsonb, true)
+((SELECT id FROM public.categories WHERE slug='recycled-newspaper-pencils'), 'Rainbow Recycled Newspaper Pencils (Pack of 10)', 'rainbow-recycled-newspaper-pencils-pack-10', 'EILA-NEWS-10', 199.00, 200, 'Handcrafted from 100% recycled newsprint paper. Each pencil reveals beautiful colorful paper layers when sharpened.', '["Saves trees & forests", "Easy to sharpen", "Non-toxic organic dye"]'::jsonb, true),
+((SELECT id FROM public.categories WHERE slug='eco-stationery-gift-sets'), 'Deluxe Corporate Eco Gifting Combo', 'deluxe-corporate-eco-gifting-combo', 'EILA-GIFT-DELUXE', 499.00, 75, 'Premium eco-friendly gifting set containing 5 seed pencils, 5 newspaper pencils, 1 plantable seed notepad, and a bamboo ruler.', '["Includes Seed Notepad & Bamboo Ruler", "Custom branding available", "Eco-friendly kraft packaging"]'::jsonb, true)
 ON CONFLICT (slug) DO NOTHING;
