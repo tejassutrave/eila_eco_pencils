@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS public.categories CASCADE;
 DROP TABLE IF EXISTS public.inquiries CASCADE;
 DROP TABLE IF EXISTS public.admin_profiles CASCADE;
 DROP TABLE IF EXISTS public.profiles CASCADE;
+DROP TABLE IF EXISTS public.newspaper_donations CASCADE;
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -168,6 +169,23 @@ CREATE TABLE public.inquiries (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 12. NEWSPAPER DOORSTEP DONATIONS TABLE
+CREATE TABLE public.newspaper_donations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    full_name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    email TEXT NOT NULL,
+    address TEXT NOT NULL,
+    city TEXT NOT NULL,
+    pincode TEXT NOT NULL,
+    estimated_weight_kg NUMERIC NOT NULL,
+    preferred_pickup_date DATE,
+    notes TEXT,
+    status TEXT DEFAULT 'pending_pickup' CHECK (status IN ('pending_pickup', 'collected', 'processed', 'cancelled')),
+    pencils_generated INTEGER GENERATED ALWAYS AS (ROUND(estimated_weight_kg * 10)) STORED
+);
+
 -- INDEXES
 CREATE INDEX idx_profiles_username ON public.profiles(username);
 CREATE INDEX idx_admin_profiles_code ON public.admin_profiles(admin_code);
@@ -187,6 +205,7 @@ ALTER TABLE public.product_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.newspaper_donations ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policy Definitions
 CREATE POLICY "Allow public select profiles" ON public.profiles FOR SELECT USING (true);
@@ -208,6 +227,8 @@ CREATE POLICY "Allow order insertion" ON public.orders FOR INSERT WITH CHECK (tr
 CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (true);
 CREATE POLICY "Allow order items insertion" ON public.order_items FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow inquiries insertion" ON public.inquiries FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public insert to newspaper_donations" ON public.newspaper_donations FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow admin select newspaper_donations" ON public.newspaper_donations FOR SELECT USING (true);
 
 -- FRESH INITIAL SEED DATA
 INSERT INTO public.categories (name, slug, description) VALUES
