@@ -63,6 +63,7 @@ export default function InteractivePlantSimulator() {
                   ? 'bg-[#1b4332] text-white ring-4 ring-[#52b788]/30 shadow-lg'
                   : 'bg-white text-[#1b4332] border border-[#e8e6da] hover:bg-[#f0efe6]'
               }`}
+              suppressHydrationWarning
             >
               <span className="text-lg">{seed.icon}</span>
               <span>{seed.name}</span>
@@ -85,18 +86,17 @@ export default function InteractivePlantSimulator() {
                 onClick={handleReset}
                 className="p-2 bg-white/80 hover:bg-white text-[#1b4332] rounded-full transition-colors shadow-sm"
                 title="Restart Plant Simulation"
+                suppressHydrationWarning
               >
                 <RefreshCw className="w-4 h-4" />
               </button>
             </div>
-
-            {/* Central Animated Visuals for Each Growth Stage */}
+            
+            {/* Animated Plant visuals... */}
             <div className="my-auto text-center space-y-4 z-10 transition-all duration-500">
-              
               {growthStage === 1 && (
                 <div className="space-y-4 animate-fadeIn">
                   <div className="w-24 h-48 mx-auto relative flex items-center justify-center">
-                    {/* Pencil stuck in soil visual */}
                     <div className="w-6 h-36 bg-gradient-to-b from-amber-800 via-amber-700 to-emerald-600 rounded-t-full shadow-lg border border-amber-900 flex flex-col justify-between items-center py-2">
                       <span className="text-[10px] font-bold text-white uppercase rotate-90 tracking-widest opacity-75">EILA HB</span>
                       <div className="w-4 h-4 rounded-full bg-emerald-400 border border-emerald-200 animate-pulse shadow-sm" title="Seed Capsule" />
@@ -137,21 +137,17 @@ export default function InteractivePlantSimulator() {
                   </div>
                 </div>
               )}
-
             </div>
 
-            {/* Soil Base Visual */}
             <div className="w-full h-12 bg-amber-950/80 rounded-2xl border-t-4 border-amber-800 flex items-center justify-center text-[11px] font-bold text-amber-200 gap-2">
               <span>🪱 Rich Bio-Organic Soil</span>
               <span>•</span>
               <span>Water Status: {waterCount > 0 ? '💧 Moist & Nourished' : '🏜️ Needs Water'}</span>
             </div>
-
           </div>
 
-          {/* Controls & Nurture Panel */}
+          {/* Controls Panel */}
           <div className="lg:col-span-5 space-y-6">
-            
             <div className="space-y-2">
               <span className="text-xs font-black uppercase text-[#2d6a4f] tracking-widest">Interactive Nurture Controls</span>
               <h3 className="text-2xl font-extrabold text-[#0f231c]">
@@ -162,7 +158,6 @@ export default function InteractivePlantSimulator() {
               </p>
             </div>
 
-            {/* Growth Progress Slider / Bar */}
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold text-[#0f231c]">
                 <span>Growth Progress</span>
@@ -176,11 +171,12 @@ export default function InteractivePlantSimulator() {
               </div>
             </div>
 
-            {/* Action Interactive Buttons */}
+            {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button
                 onClick={handleWaterPlant}
                 className="py-4 bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-[#1b4332]/20 transition-all hover:scale-105 flex items-center justify-center gap-2"
+                suppressHydrationWarning
               >
                 <Droplets className="w-4 h-4 text-[#74c69d] animate-bounce" /> Water Plant ({waterCount})
               </button>
@@ -192,6 +188,7 @@ export default function InteractivePlantSimulator() {
                     ? 'bg-amber-400 text-[#0f231c] border-amber-500 shadow-amber-300/50'
                     : 'bg-[#faf9f5] text-[#1b4332] border-[#e8e6da] hover:bg-[#f0efe6]'
                 }`}
+                suppressHydrationWarning
               >
                 <Sun className={`w-4 h-4 ${sunlight ? 'text-amber-900 animate-spin' : 'text-amber-500'}`} />
                 {sunlight ? 'Sunlight Active ☀️' : 'Add Sunlight 🌤️'}

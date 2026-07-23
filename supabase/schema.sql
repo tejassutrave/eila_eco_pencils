@@ -222,3 +222,26 @@ INSERT INTO public.products (category_id, name, slug, sku, price, stock, descrip
 
 INSERT INTO public.admin_profiles (admin_code, full_name, email, role, department, permissions) VALUES
 ('ADM-SUPER-01', 'Eila Executive Admin', 'admin@eilaecopencils.com', 'super_admin', 'Executive Operations', '["analytics", "inventory", "orders", "inquiries", "revenue_reports", "admin_management"]'::jsonb);
+
+-- 12. NEWSPAPER DONATIONS TABLE
+CREATE TABLE public.donations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    donor_name TEXT NOT NULL,
+    donor_email TEXT NOT NULL,
+    donor_phone TEXT NOT NULL,
+    weight_estimate NUMERIC(6, 2) NOT NULL CHECK (weight_estimate > 0),
+    pickup_address TEXT NOT NULL,
+    city TEXT NOT NULL DEFAULT 'Dharwad',
+    state TEXT NOT NULL DEFAULT 'Karnataka',
+    pincode TEXT NOT NULL,
+    preferred_date DATE NOT NULL,
+    preferred_slot TEXT CHECK (preferred_slot IN ('Morning (9 AM - 12 PM)', 'Afternoon (12 PM - 3 PM)', 'Evening (3 PM - 6 PM)')),
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'scheduled', 'collected', 'cancelled')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS Policy for Donations
+ALTER TABLE public.donations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public insert donations" ON public.donations FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow admins view donations" ON public.donations FOR SELECT USING (true);

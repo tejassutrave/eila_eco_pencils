@@ -44,6 +44,7 @@ export default function EcoAssistantWidget() {
           onClick={() => setIsOpen(true)}
           className="px-4 py-3 bg-[#1b4332] hover:bg-[#2d6a4f] text-white rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 flex items-center gap-2.5 font-extrabold text-xs border border-[#74c69d]/40 group"
           aria-label="Open Eco Assistant"
+          suppressHydrationWarning
         >
           <div className="w-8 h-8 rounded-full bg-[#52b788] text-[#0f231c] flex items-center justify-center font-bold shrink-0">
             <Sprout className="w-4 h-4 animate-bounce" />
@@ -73,6 +74,7 @@ export default function EcoAssistantWidget() {
             <button
               onClick={() => setIsOpen(false)}
               className="p-1.5 text-[#a3b18a] hover:text-white hover:bg-[#2d6a4f] rounded-full transition-colors"
+              suppressHydrationWarning
             >
               <X className="w-5 h-5" />
             </button>
@@ -101,6 +103,7 @@ export default function EcoAssistantWidget() {
                       ? 'bg-[#1b4332] text-white border-[#1b4332] shadow-sm'
                       : 'bg-white text-[#2d4036] border-[#e8e6da] hover:bg-[#f0efe6]'
                   }`}
+                  suppressHydrationWarning
                 >
                   {item.q}
                 </button>
@@ -130,7 +133,7 @@ export default function EcoAssistantWidget() {
           <div className="p-3 bg-white border-t border-[#e8e6da] flex items-center justify-between text-xs">
             <span className="text-[#4a5e55] text-[11px]">Need custom help?</span>
             <a
-              href="https://wa.me/918971456552"
+              href="https://wa.me/919980004585"
               target="_blank"
               rel="noopener noreferrer"
               className="px-3 py-1.5 bg-[#52b788] hover:bg-[#40916c] text-white font-extrabold rounded-full text-[11px] inline-flex items-center gap-1"

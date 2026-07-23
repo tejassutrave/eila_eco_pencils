@@ -21,14 +21,19 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: 'Eila Eco Pencils — Plantable Seed & Recycled Newspaper Pencils India',
-  description: 'Shop 100% tree-free recycled newspaper pencils and plantable seed pencils embedded with organic herb & flower seeds. Eco-friendly stationery for schools & corporate gifting across India.',
-  keywords: 'eco pencils, plantable seed pencils, recycled newspaper pencils, eco stationery india, sustainable corporate gifting',
+  title: 'Eila Eco Products — Plantable Seed & Recycled Newspaper Stationery',
+  description: 'Shop 100% tree-free recycled newspaper pencils, plantable seed pens, handmade newspaper pouches, and customizable carry bags by Bilva Enterprise, Dharwad. Premium eco-stationery & corporate gifting.',
+  keywords: 'eco products, plantable seed pencils, plantable pens, recycled newspaper pencils, newspaper pouches, paper carry bags, eco stationery india, sustainable corporate gifting, dharwad karnataka',
+  icons: {
+    icon: '/logo_leaf_transparent.png',
+    shortcut: '/logo_leaf_transparent.png',
+    apple: '/logo_leaf_transparent.png',
+  },
   openGraph: {
-    title: 'Eila Eco Pencils — Sustainable Stationery India',
-    description: 'Transform waste into greenery with plantable seed pencils and tree-free newspaper pencils.',
-    url: 'https://eilaecopencils.com',
-    siteName: 'Eila Eco Pencils',
+    title: 'Eila Eco Products — Sustainable Stationery India',
+    description: 'Transform waste into greenery with plantable seed pencils, seed pens, and eco-packaging.',
+    url: 'https://eilaecoproducts.com',
+    siteName: 'Eila Eco Products',
     locale: 'en_IN',
     type: 'website',
   },
@@ -36,7 +41,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${inter.variable}`} suppressHydrationWarning={true}>
       <head>
         <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
       </head>

@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { BarChart3, TrendingUp, ShoppingBag, Package, Users, Building2, ShieldCheck, LogOut, Plus, Edit2, CheckCircle2, Clock, AlertTriangle, ArrowUpRight, DollarSign, RefreshCw, Filter } from 'lucide-react';
+import { BarChart3, TrendingUp, ShoppingBag, Package, Users, Building2, ShieldCheck, LogOut, Plus, Edit2, CheckCircle2, Clock, AlertTriangle, ArrowUpRight, DollarSign, RefreshCw, Filter, Newspaper } from 'lucide-react';
 import { INITIAL_PRODUCTS } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 
@@ -81,6 +81,100 @@ export default function AdminDashboardPage() {
       created_at: '2026-07-21'
     }
   ]);
+
+  // Newspaper Donations State (with high-quality default mock data)
+  const [donations, setDonations] = useState([
+    {
+      id: 'don-001',
+      donor_name: 'Amit Deshpande',
+      donor_email: 'amit.desh@gmail.com',
+      donor_phone: '+91 98450 12345',
+      weight_estimate: 25.5,
+      pickup_address: 'Flat 302, Green Meadows, Saptapur',
+      city: 'Dharwad',
+      state: 'Karnataka',
+      pincode: '580001',
+      preferred_date: '2026-07-25',
+      preferred_slot: 'Morning (9 AM - 12 PM)',
+      status: 'pending',
+      created_at: '2026-07-23T10:00:00.000Z'
+    },
+    {
+      id: 'don-002',
+      donor_name: 'Rekha Kulkarni',
+      donor_email: 'rekha.k@hotmail.com',
+      donor_phone: '+91 88920 54321',
+      weight_estimate: 15.0,
+      pickup_address: 'No 45, 3rd Cross, Vidyagiri',
+      city: 'Dharwad',
+      state: 'Karnataka',
+      pincode: '580004',
+      preferred_date: '2026-07-26',
+      preferred_slot: 'Afternoon (12 PM - 3 PM)',
+      status: 'scheduled',
+      created_at: '2026-07-22T14:30:00.000Z'
+    },
+    {
+      id: 'don-003',
+      donor_name: 'Karan Patil',
+      donor_email: 'karan_patil@outlook.com',
+      donor_phone: '+91 77609 88990',
+      weight_estimate: 50.0,
+      pickup_address: 'Kalyan Nagar, Near Kalyan School',
+      city: 'Dharwad',
+      state: 'Karnataka',
+      pincode: '580007',
+      preferred_date: '2026-07-20',
+      preferred_slot: 'Evening (3 PM - 6 PM)',
+      status: 'collected',
+      created_at: '2026-07-19T09:15:00.000Z'
+    }
+  ]);
+
+  // Load live doorstep collection requests from Supabase DB on mount
+  useEffect(() => {
+    const fetchDonations = async () => {
+      try {
+        const res = await fetch('/api/donate');
+        const result = await res.json();
+        if (result.success && result.data && result.data.length > 0) {
+          setDonations((prevMock) => {
+            const dbIds = new Set(result.data.map(d => d.id));
+            const filteredMock = prevMock.filter(m => !dbIds.has(m.id));
+            return [...result.data, ...filteredMock];
+          });
+        }
+      } catch (err) {
+        console.warn('Could not load donations from API, using mock default:', err.message);
+      }
+    };
+    fetchDonations();
+  }, []);
+
+  // Update status of doorstep collection request (DB sync + local state update)
+  const updateDonationStatus = async (donationId, newStatus) => {
+    const isRealDbId = donationId.length > 10 && donationId.includes('-');
+    
+    setDonations((prev) =>
+      prev.map((d) => (d.id === donationId ? { ...d, status: newStatus } : d))
+    );
+
+    if (isRealDbId) {
+      try {
+        const res = await fetch('/api/donate', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: donationId, status: newStatus }),
+        });
+        const result = await res.json();
+        if (!result.success) {
+          console.error('Failed to update donation status in database:', result.error);
+        }
+      } catch (err) {
+        console.error('Failed to update donation status:', err);
+      }
+    }
+  };
 
   // Analytics Metrics
   const totalRevenue = orders.reduce((sum, o) => sum + (o.payment_status === 'paid' ? o.total_amount : 0), 0);
@@ -168,6 +262,14 @@ export default function AdminDashboardPage() {
             }`}
           >
             Bulk Leads ({inquiries.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('donations')}
+            className={`px-3.5 py-2 rounded-full text-xs font-bold transition-all ${
+              activeTab === 'donations' ? 'bg-[#1b4332] text-white shadow-sm' : 'bg-[#faf9f5] text-[#2d4036] hover:bg-[#f0efe6] border border-[#e8e6da]'
+            }`}
+          >
+            Newspaper Donations ({donations.length})
           </button>
           <button
             onClick={() => setActiveTab('profile')}
@@ -484,6 +586,93 @@ export default function AdminDashboardPage() {
                   </span>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. NEWSPAPER DONATIONS VIEW */}
+      {activeTab === 'donations' && (
+        <div className="space-y-6">
+          {/* Donations Stats Card Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-2 shadow-sm">
+              <span className="text-[10px] font-bold text-[#2d6a4f] uppercase tracking-wider block">Total Paper Collected</span>
+              <span className="text-3xl font-black text-[#0f231c]">
+                {donations.reduce((sum, d) => sum + (d.status === 'collected' ? Number(d.weight_estimate) : 0), 0)} kg
+              </span>
+              <span className="text-[11px] text-[#4a5e55] block">From completed doorstep collections</span>
+            </div>
+            
+            <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-2 shadow-sm">
+              <span className="text-[10px] font-bold text-[#2d6a4f] uppercase tracking-wider block">Est. Pencils Created</span>
+              <span className="text-3xl font-black text-[#1b4332]">
+                {Math.round(donations.reduce((sum, d) => sum + (d.status === 'collected' ? Number(d.weight_estimate) : 0), 0) * 10)} units
+              </span>
+              <span className="text-[11px] text-[#52b788] font-bold block">1 kg paper yields ~10 wood-free pencils</span>
+            </div>
+
+            <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-2 shadow-sm">
+              <span className="text-[10px] font-bold text-[#2d6a4f] uppercase tracking-wider block">Est. Trees Saved</span>
+              <span className="text-3xl font-black text-[#1b4332]">
+                {(donations.reduce((sum, d) => sum + (d.status === 'collected' ? Number(d.weight_estimate) : 0), 0) * 0.015).toFixed(1)} trees
+              </span>
+              <span className="text-[11px] text-[#52b788] font-bold block">1 kg paper saves ~0.015 mature trees</span>
+            </div>
+          </div>
+
+          <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-6 shadow-sm">
+            <h3 className="font-extrabold text-lg text-[#0f231c]">Doorstep Newspaper Collection Pipeline</h3>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-[#2d4036]">
+                <thead className="bg-[#faf9f5] text-[#1b4332] font-extrabold uppercase tracking-wider border-b border-[#e8e6da]">
+                  <tr>
+                    <th className="p-3">Donor Info</th>
+                    <th className="p-3">Estimated Weight</th>
+                    <th className="p-3">Collection Address</th>
+                    <th className="p-3">Preferred Schedule</th>
+                    <th className="p-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#f0efe6]">
+                  {donations.map((d) => (
+                    <tr key={d.id} className="hover:bg-[#faf9f5]">
+                      <td className="p-3">
+                        <span className="font-bold text-[#0f231c] block">{d.donor_name}</span>
+                        <span className="text-[#4a5e55] text-[11px] block">{d.donor_email}</span>
+                        <a href={`tel:${d.donor_phone}`} className="text-[#2d6a4f] hover:underline font-semibold text-[11px] block mt-0.5">{d.donor_phone}</a>
+                      </td>
+                      <td className="p-3">
+                        <span className="font-black text-[#0f231c]">{d.weight_estimate} kg</span>
+                        <span className="text-[11px] text-[#4a5e55] block">~{Math.round(d.weight_estimate * 10)} pencils potential</span>
+                      </td>
+                      <td className="p-3 max-w-xs">
+                        <span className="block text-[#0f231c] font-medium leading-relaxed">{d.pickup_address}</span>
+                        <span className="text-[#4a5e55] text-[11px]">{d.city}, {d.state} - {d.pincode}</span>
+                      </td>
+                      <td className="p-3">
+                        <span className="font-bold text-[#1b4332] block">
+                          {new Date(d.preferred_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </span>
+                        <span className="text-[#4a5e55] text-[11px] block">{d.preferred_slot}</span>
+                      </td>
+                      <td className="p-3">
+                        <select
+                          value={d.status}
+                          onChange={(e) => updateDonationStatus(d.id, e.target.value)}
+                          className="bg-[#faf9f5] border border-[#e8e6da] rounded-lg px-2 py-1 text-xs text-[#0f231c] font-bold focus:outline-none"
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="scheduled">Scheduled</option>
+                          <option value="collected">Collected</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

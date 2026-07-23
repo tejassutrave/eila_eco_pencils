@@ -37,28 +37,38 @@ export function CartProvider({ children }) {
   }, [cart, cartStorageKey]);
 
   const addToCart = (product, quantity = 1) => {
+    const minQty = product.moq || 1;
+    const addQty = quantity >= minQty ? quantity : minQty;
+
     setCart((prevCart) => {
       const existingItemIndex = prevCart.findIndex((item) => item.id === product.id);
       if (existingItemIndex > -1) {
         const updatedCart = [...prevCart];
-        updatedCart[existingItemIndex].quantity += quantity;
+        // If already exists, increment the quantity
+        updatedCart[existingItemIndex].quantity += (quantity === 1 && minQty > 1) ? minQty : quantity;
         return updatedCart;
       }
-      return [...prevCart, { ...product, quantity }];
+      return [...prevCart, { ...product, quantity: addQty }];
     });
     setIsCartOpen(true);
   };
 
   const updateQuantity = (productId, newQuantity) => {
-    if (newQuantity <= 0) {
-      removeFromCart(productId);
-      return;
-    }
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    setCart((prevCart) => {
+      const item = prevCart.find((i) => i.id === productId);
+      if (!item) return prevCart;
+      
+      if (newQuantity <= 0) {
+        return prevCart.filter((i) => i.id !== productId);
+      }
+
+      const minQty = item.moq || 1;
+      const targetQty = newQuantity < minQty ? minQty : newQuantity;
+
+      return prevCart.map((i) =>
+        i.id === productId ? { ...i, quantity: targetQty } : i
+      );
+    });
   };
 
   const removeFromCart = (productId) => {

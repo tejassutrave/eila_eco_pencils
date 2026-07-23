@@ -18,8 +18,19 @@ export default function SustainabilityPage() {
           Turning Waste into Greenery
         </h1>
         <p className="text-base text-[#3b5247] leading-relaxed">
-          Over 8 billion wooden pencils are manufactured globally every year, sacrificing over 80,000 mature trees daily. At Eila Eco Pencils, we are changing that narrative.
+          At Eila Eco Products, we believe we don't need to damage or destroy the environment to live a healthy, happy, and sustained life. We are changing the narrative from consumption to conservation.
         </p>
+
+        {/* Why Us? Deforestation Alert Card */}
+        <div className="bg-[#fff3cd] border-l-4 border-amber-500 rounded-2xl p-5 text-left text-xs text-[#664d03] max-w-2xl mx-auto space-y-2 mt-4 shadow-sm">
+          <strong className="font-extrabold text-sm block">⚠️ Why Eila? The Cost of Traditional Pencils</strong>
+          <p className="leading-relaxed">
+            Nearly <strong>82,000 mature trees</strong> are cut down daily to produce the 14 billion traditional wood-based pencils used globally every year. Wooden pencils are a major cause of global deforestation, contributing to climate damage and disturbing vital natural ecosystems.
+          </p>
+          <p className="font-bold text-[#1b4332]">
+            Eila's response: "Planting the Future" — swapping timber for upcycled waste paper and embedding seed capsules that grow back into greenery!
+          </p>
+        </div>
       </div>
 
       {/* Impact Metric Cards */}
@@ -101,6 +112,54 @@ export default function SustainabilityPage() {
         </div>
 
       </div>
+
+      {/* The Mathematics of Recycling */}
+      <section className="space-y-8 border-t border-[#e8e6da] pt-16">
+        <div className="text-center max-w-3xl mx-auto space-y-2">
+          <span className="bg-[#e8f5e9] text-[#1b4332] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider inline-flex items-center gap-1.5 border border-[#b7e4c7]">
+            🌱 Environmental Benefits
+          </span>
+          <h2 className="text-3xl font-extrabold text-[#0f231c]">The Mathematics of Recycling</h2>
+          <p className="text-xs text-[#4a5e55]">
+            "There is a new generational worldwide wave occurring, moving in an environmentally conscious direction... Don't get left behind."
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-2 shadow-sm">
+            <span className="text-2xl">⚡</span>
+            <h4 className="font-extrabold text-[#0f231c] text-xs">4,000 KWh Electricity Saved</h4>
+            <p className="text-[11px] text-[#4a5e55] leading-relaxed">
+              Recycling just 1 ton of newspaper saves ~4,000 KWh of electricity. This is enough power to support a standard 3-bedroom Indian home for an entire year!
+            </p>
+          </div>
+
+          <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-2 shadow-sm">
+            <span className="text-2xl">🌲</span>
+            <h4 className="font-extrabold text-[#0f231c] text-xs">1 Ton of Wood Preserved</h4>
+            <p className="text-[11px] text-[#4a5e55] leading-relaxed">
+              Every ton of newspaper upcycled saves approximately 1 ton of raw wood. Upcycling half the world's paper would protect over 20 million acres of forests.
+            </p>
+          </div>
+
+          <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-2 shadow-sm">
+            <span className="text-2xl">🗑️</span>
+            <h4 className="font-extrabold text-[#0f231c] text-xs">3 Cubic Meters Landfill Void</h4>
+            <p className="text-[11px] text-[#4a5e55] leading-relaxed">
+              Recycling 1 ton of newspaper intercepts 3 cubic meters of waste from filling up local municipal landfills, reducing disposal logjams.
+            </p>
+          </div>
+
+          <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-2 shadow-sm md:col-span-3">
+            <h4 className="font-extrabold text-[#0f231c] text-xs flex items-center gap-2">
+              <Leaf className="w-4 h-4 text-[#2d6a4f]" /> Reduced Manufacturing Footprint
+            </h4>
+            <p className="text-[11px] text-[#4a5e55] leading-relaxed">
+              By using post-consumer recycled paper instead of harvesting virgin pulp, we drastically reduce air emissions and wastewater pollution associated with primary chemical pulping. The world's ecosystem is suffering; Eila provides a simple, daily adjustment to protect environmental health.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <div className="text-center">
         <Link

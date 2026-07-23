@@ -85,6 +85,7 @@ export default function ProductCard({ product }) {
                 ? 'bg-amber-400 text-[#0f231c] scale-95'
                 : 'bg-[#1b4332] hover:bg-[#2d6a4f] text-white hover:scale-105 shadow-[#1b4332]/20'
             }`}
+            suppressHydrationWarning
           >
             {added ? (
               <>

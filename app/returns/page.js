@@ -71,7 +71,7 @@ export default function ReturnsPage() {
             <span className="w-7 h-7 rounded-xl bg-[#1b4332] text-white flex items-center justify-center font-black shrink-0">2</span>
             <div className="space-y-1">
               <strong className="block text-[#0f231c]">Send Us Your Order Number</strong>
-              <span>Email <a href="mailto:hello@eilaecopencils.com" className="text-[#1b4332] font-bold underline">hello@eilaecopencils.com</a> or WhatsApp us with your order number.</span>
+              <span>Email <a href="mailto:eilaecoproducts@gmail.com" className="text-[#1b4332] font-bold underline">eilaecoproducts@gmail.com</a> or WhatsApp us with your order number.</span>
             </div>
           </div>
 
@@ -86,7 +86,7 @@ export default function ReturnsPage() {
 
         <div className="pt-2 flex flex-col sm:flex-row gap-4">
           <a
-            href="https://wa.me/918971456552"
+            href="https://wa.me/919980004585"
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3.5 bg-[#52b788] hover:bg-[#40916c] text-white font-extrabold text-xs rounded-full inline-flex items-center justify-center gap-2 shadow-md transition-transform hover:scale-105"
@@ -94,7 +94,7 @@ export default function ReturnsPage() {
             <MessageSquare className="w-4 h-4" /> Message Support on WhatsApp
           </a>
           <a
-            href="mailto:hello@eilaecopencils.com"
+            href="mailto:eilaecoproducts@gmail.com"
             className="px-6 py-3.5 bg-[#faf9f5] hover:bg-[#f0efe6] text-[#0f231c] border border-[#e8e6da] font-extrabold text-xs rounded-full inline-flex items-center justify-center gap-2 transition-transform hover:scale-105"
           >
             <Mail className="w-4 h-4" /> Email Customer Care

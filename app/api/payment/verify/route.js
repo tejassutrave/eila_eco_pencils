@@ -72,9 +72,9 @@ export async function POST(request) {
     }
 
     // Build WhatsApp order confirmation link
-    const whatsappPhone = process.env.NEXT_PUBLIC_COMPANY_WHATSAPP || '918971456552';
+    const whatsappPhone = process.env.NEXT_PUBLIC_COMPANY_WHATSAPP || '919980004585';
     const whatsappMessage = encodeURIComponent(
-      `Hello Eila Eco Pencils! 🌿 I just placed an order!\n\n` +
+      `Hello Eila Eco Products! 🌿 I just placed an order!\n\n` +
       `Order #: ${orderNumber}\n` +
       `Name: ${customerDetails.name}\n` +
       `Amount: ₹${totalAmount}\n` +

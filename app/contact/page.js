@@ -27,7 +27,7 @@ export default function ContactPage() {
             <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
             <div>
               <strong className="block text-white">Address</strong>
-              <span>Eila Eco Pencils Pvt. Ltd.<br />Bengaluru, Karnataka 560001, India</span>
+              <span>Bilva Enterprise<br />Dharwad, Karnataka 580001, India</span>
             </div>
           </div>
 
@@ -35,15 +35,15 @@ export default function ContactPage() {
             <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
             <div>
               <strong className="block text-white">WhatsApp & Support</strong>
-              <span>+91 89714 56552</span>
+              <span>+91 99800 04585</span>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
+            <Mail className="w-4 h-4 text-[#52b788] shrink-0" />
             <div>
               <strong className="block text-white">Email</strong>
-              <span>hello@eilaecopencils.com</span>
+              <span>eilaecoproducts@gmail.com</span>
             </div>
           </div>
         </div>

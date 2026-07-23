@@ -108,6 +108,11 @@ export default function CartDrawer() {
 
                   <div className="flex-1 min-w-0 space-y-1">
                     <h4 className="font-bold text-xs text-[#0f231c] truncate">{item.name}</h4>
+                    {item.moq > 1 && (
+                      <span className="inline-block text-[9px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                        MOQ: {item.moq} units
+                      </span>
+                    )}
                     <p className="text-xs font-black text-[#1b4332]">₹{item.price.toFixed(2)}</p>
 
                     <div className="flex items-center gap-2 pt-1">
