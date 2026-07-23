@@ -24,6 +24,11 @@ export const metadata = {
   title: 'Eila Eco Pencils — Plantable Seed & Recycled Newspaper Pencils India',
   description: 'Shop 100% tree-free recycled newspaper pencils and plantable seed pencils embedded with organic herb & flower seeds. Eco-friendly stationery for schools & corporate gifting across India.',
   keywords: 'eco pencils, plantable seed pencils, recycled newspaper pencils, eco stationery india, sustainable corporate gifting',
+  icons: {
+    icon: '/logo_leaf_transparent.png',
+    shortcut: '/logo_leaf_transparent.png',
+    apple: '/logo_leaf_transparent.png',
+  },
   openGraph: {
     title: 'Eila Eco Pencils — Sustainable Stationery India',
     description: 'Transform waste into greenery with plantable seed pencils and tree-free newspaper pencils.',

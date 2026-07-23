@@ -39,7 +39,12 @@ export default function AboutPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
       
       {/* Hero Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-4">
+      <div className="text-center max-w-3xl mx-auto space-y-6 flex flex-col items-center">
+        <img
+          src="/logo_transparent.png"
+          alt="Eila Eco Pencils Brand Logo"
+          className="w-32 h-auto object-contain mb-2"
+        />
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#e8f5e9] text-[#1b4332] text-xs font-bold border border-[#b7e4c7]">
           <Sparkles className="w-4 h-4 text-amber-500" />
           <span>Our Story & Mission</span>

@@ -1,15 +1,39 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Leaf, ArrowRight, Sparkles, Sprout, CheckCircle2, Trees, ShieldCheck, Heart, Star, Award } from 'lucide-react';
 import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from '@/lib/supabase';
 import ProductCard from '@/components/ProductCard';
 import InteractivePlantSimulator from '@/components/InteractivePlantSimulator';
 import ImpactCalculator from '@/components/ImpactCalculator';
+import HeroStoryCarousel from '@/components/HeroStoryCarousel';
+
+const HERO_BADGES = [
+  '♻ Zero Waste',
+  '🌱 Plantable',
+  '🇮🇳 Made in India',
+  '👩 Women Empowered',
+  '📰 Recycled Newspaper',
+  '🔄 Circular Economy',
+];
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [badgeIndex, setBadgeIndex] = useState(0);
+  const [isBadgeFading, setIsBadgeFading] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIsBadgeFading(true);
+      setTimeout(() => {
+        setBadgeIndex((prev) => (prev + 1) % HERO_BADGES.length);
+        setIsBadgeFading(false);
+      }, 250);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const filteredProducts = selectedCategory === 'all'
     ? INITIAL_PRODUCTS
@@ -29,17 +53,23 @@ export default function HomePage() {
           {/* Left Column: Text & CTA (7 Cols) */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#e8f5e9] border border-[#b7e4c7] text-[#1b4332] text-xs font-bold shadow-sm">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <span>India’s Leading Plantable Stationery Brand</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#e8f5e9] border border-[#b7e4c7] text-[#1b4332] text-xs font-bold shadow-sm h-9 overflow-hidden">
+              <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+              <span
+                className={`transition-all duration-300 transform ${
+                  isBadgeFading ? 'opacity-0 -translate-y-1' : 'opacity-100 translate-y-0'
+                }`}
+              >
+                {HERO_BADGES[badgeIndex]}
+              </span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0f231c] leading-[1.15]">
-              Don’t Throw Away Your Pencils — <span className="text-[#2d6a4f]">Plant Them!</span> 🌿
+              Write Today. <span className="text-[#2d6a4f]">Plant Tomorrow.</span> 🌿
             </h1>
 
             <p className="text-[#3b5247] text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
-              Crafted from 100% recycled newsprint paper without cutting a single tree. Embedded with organic non-GMO seeds that sprout into tomato, basil, marigold & sunflower!
+              Every Eila product begins as discarded newspaper and ends as a symbol of sustainability — creating livelihoods for women, reducing waste, and giving nature another chance.
             </p>
 
             {/* CTAs */}
@@ -76,31 +106,9 @@ export default function HomePage() {
 
           </div>
 
-          {/* Right Column: Visual Feature Showcase (5 Cols) */}
-          <div className="lg:col-span-5 relative mx-auto max-w-md lg:max-w-none">
-            <div className="relative bg-white p-4 sm:p-5 rounded-[2.5rem] border border-[#e8e6da] shadow-2xl">
-              
-              <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-md bg-[#faf9f5]">
-                <img
-                  src="/hero_seed_pencils.png"
-                  alt="Eila Eco Seed Pencils"
-                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
-                />
-                
-                {/* Floating Seed Badge */}
-                <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-[#e8e6da] flex items-center gap-3.5 shadow-xl">
-                  <div className="w-10 h-10 rounded-xl bg-[#1b4332] text-[#74c69d] flex items-center justify-center shrink-0 font-bold">
-                    <Sprout className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h5 className="font-extrabold text-[#0f231c] text-xs">Embedded Seed Capsule</h5>
-                    <p className="text-[11px] text-[#2d6a4f]">Tomato • Basil • Chilli • Marigold • Sunflower</p>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
+          {/* Right Column: Interactive Story Carousel (5 Cols) */}
+          <div className="lg:col-span-5 relative mx-auto max-w-md lg:max-w-none w-full">
+            <HeroStoryCarousel />
           </div>
 
         </div>

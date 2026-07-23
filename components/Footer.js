@@ -59,10 +59,12 @@ export default function Footer() {
           
           {/* Brand Info (4 Cols) */}
           <div className="md:col-span-4 space-y-4">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-[#52b788] flex items-center justify-center shadow-md">
-                <Leaf className="w-5 h-5 text-[#0f231c]" />
-              </div>
+            <Link href="/" className="flex items-center gap-3">
+              <img
+                src="/logo_leaf_transparent.png"
+                alt="Eila Logo"
+                className="w-9 h-9 object-contain"
+              />
               <div className="flex flex-col">
                 <span className="font-extrabold text-2xl tracking-tight text-white">EILA</span>
                 <span className="text-[9px] tracking-widest uppercase text-[#74c69d] font-bold -mt-1">Eco Pencils</span>
@@ -79,6 +81,7 @@ export default function Footer() {
             <ul className="space-y-2 text-[#a3b18a]">
               <li><Link href="/shop" className="hover:text-white transition-colors">Plantable Seed Pencils</Link></li>
               <li><Link href="/shop" className="hover:text-white transition-colors">Recycled Newspaper Pencils</Link></li>
+              <li><Link href="/donate-newspapers" className="hover:text-[#74c69d] text-emerald-400 font-bold transition-colors">Donate Old Newspapers ♻️</Link></li>
               <li><Link href="/shop" className="hover:text-white transition-colors">Eco Stationery Gift Combos</Link></li>
               <li><Link href="/bulk-orders" className="hover:text-white transition-colors">Corporate Bulk Enquiries</Link></li>
               <li><Link href="/sustainability" className="hover:text-white transition-colors">Our Eco Impact</Link></li>
