@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Leaf, Heart, Mail, Phone, MapPin, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
 
 export default function Footer() {
@@ -60,10 +61,12 @@ export default function Footer() {
           {/* Brand Info (4 Cols) */}
           <div className="md:col-span-4 space-y-4">
             <Link href="/" className="flex items-center gap-3">
-              <img
+              <Image
                 src="/logo_leaf_transparent.png"
                 alt="Eila Logo"
-                className="w-9 h-9 object-contain"
+                width={36}
+                height={36}
+                className="object-contain"
               />
               <div className="flex flex-col">
                 <span className="font-extrabold text-2xl tracking-tight text-white">EILA</span>

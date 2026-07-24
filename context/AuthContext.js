@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import bcrypt from 'bcryptjs';
+
 import { supabase } from '@/lib/supabase';
 
 const AuthContext = createContext();
@@ -104,7 +104,8 @@ export function AuthProvider({ children }) {
       };
     }
 
-    const passwordHash = bcrypt.hashSync(password, 10);
+    const bcrypt = await import('bcryptjs');
+    const passwordHash = bcrypt.default.hashSync(password, 10);
     let userId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
 
     try {
@@ -220,8 +221,9 @@ export function AuthProvider({ children }) {
         .single();
 
       if (profileData) {
+        const bcrypt = await import('bcryptjs');
         const isMatch = profileData.password_hash
-          ? bcrypt.compareSync(password, profileData.password_hash)
+          ? bcrypt.default.compareSync(password, profileData.password_hash)
           : false;
 
         if (isMatch) {
@@ -254,7 +256,8 @@ export function AuthProvider({ children }) {
       };
     }
 
-    const isPasswordValid = bcrypt.compareSync(password, existingUser.passwordHash);
+    const bcrypt = await import('bcryptjs');
+    const isPasswordValid = bcrypt.default.compareSync(password, existingUser.passwordHash);
 
     if (!isPasswordValid) {
       return {

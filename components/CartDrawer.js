@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, Truck } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
@@ -99,10 +100,12 @@ export default function CartDrawer() {
                   className="bg-white border border-[#e8e6da] rounded-2xl p-3.5 flex gap-3.5 items-center hover:border-[#52b788] transition-colors shadow-sm"
                 >
                   <div className="relative w-16 h-16 bg-[#f4f3ed] rounded-xl overflow-hidden shrink-0 border border-[#e8e6da]">
-                    <img
+                    <Image
                       src={item.image || 'https://images.unsplash.com/photo-1585336261026-8f5786372966?auto=format&fit=crop&q=80&w=400'}
                       alt={item.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="64px"
+                      className="object-cover"
                     />
                   </div>
 

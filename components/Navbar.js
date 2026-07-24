@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingBag, Leaf, Menu, X, Search, Sparkles, User, LogOut, UserCheck, Truck } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
@@ -54,10 +55,13 @@ export default function Navbar() {
           
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <img
+            <Image
               src="/logo_leaf_transparent.png"
               alt="Eila Logo"
-              className="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-300"
+              width={40}
+              height={40}
+              priority={true}
+              className="object-contain group-hover:scale-105 transition-transform duration-300"
             />
             <div className="flex flex-col">
               <span className="font-extrabold text-2xl tracking-tight text-[#0f231c] group-hover:text-[#2d6a4f] transition-colors">

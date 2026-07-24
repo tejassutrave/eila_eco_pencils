@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingBag, Star, Check, Sparkles } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
@@ -22,10 +23,13 @@ export default function ProductCard({ product }) {
       {/* Image Container */}
       <div className="relative aspect-square bg-[#f4f3ed] overflow-hidden p-3">
         <div className="w-full h-full rounded-2xl overflow-hidden relative">
-          <img
+          <Image
             src={product.image || 'https://images.unsplash.com/photo-1585336261026-8f5786372966?auto=format&fit=crop&q=80&w=600'}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={false}
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         </div>
 

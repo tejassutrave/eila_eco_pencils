@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingBag, Star, Check, ArrowLeft, Sprout, ShieldCheck, Truck, RefreshCw, Leaf } from 'lucide-react';
 import { INITIAL_PRODUCTS } from '@/lib/supabase';
 import { useCart } from '@/context/CartContext';
@@ -40,10 +41,12 @@ export default function ProductDetailPage() {
         {/* Product Images Showcase */}
         <div className="space-y-4">
           <div className="relative aspect-square rounded-3xl bg-white border border-[#e8e6da] overflow-hidden shadow-md p-4">
-            <img
+            <Image
               src={selectedImage || product.image}
               alt={product.name}
-              className="w-full h-full object-cover rounded-2xl"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover rounded-2xl"
             />
             <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold text-[#1b4332] border border-[#e8e6da] shadow-sm flex items-center gap-1.5">
               <Sprout className="w-4 h-4 text-[#52b788]" />
@@ -62,7 +65,7 @@ export default function ProductDetailPage() {
                     selectedImage === imgUrl ? 'border-[#1b4332] scale-95' : 'border-[#e8e6da] hover:border-[#52b788]'
                   }`}
                 >
-                  <img src={imgUrl} alt={`${product.name} thumbnail ${idx}`} className="w-full h-full object-cover rounded-xl" />
+                  <Image src={imgUrl} alt={`${product.name} thumbnail ${idx}`} fill sizes="80px" className="object-cover rounded-xl" />
                 </button>
               ))}
             </div>
