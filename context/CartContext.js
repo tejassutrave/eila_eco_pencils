@@ -10,6 +10,7 @@ export function CartProvider({ children }) {
   const { user } = useAuth();
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Compute storage key based on active user state
   const cartStorageKey = user?.id ? `eila_cart_${user.id}` : 'eila_cart_guest';
@@ -17,6 +18,7 @@ export function CartProvider({ children }) {
   // Synchronize cart whenever user logs in or out
   useEffect(() => {
     const loadCart = async () => {
+      setIsLoaded(false);
       if (!user?.id) {
         // If guest, load from localStorage
         try {
@@ -89,6 +91,7 @@ export function CartProvider({ children }) {
             }
 
             setCart(mappedCart);
+            setIsLoaded(true);
             return;
           }
         }
@@ -103,6 +106,7 @@ export function CartProvider({ children }) {
       } catch (e) {
         setCart([]);
       }
+      setIsLoaded(true);
     };
 
     loadCart();
@@ -110,6 +114,8 @@ export function CartProvider({ children }) {
 
   // Persist active cart to localStorage & Supabase DB
   useEffect(() => {
+    if (!isLoaded) return;
+
     const syncCart = async () => {
       try {
         localStorage.setItem(cartStorageKey, JSON.stringify(cart));
@@ -149,7 +155,7 @@ export function CartProvider({ children }) {
     }, 400);
 
     return () => clearTimeout(debounceTimer);
-  }, [cart, user, cartStorageKey]);
+  }, [cart, user, cartStorageKey, isLoaded]);
 
   const addToCart = (product, quantity = 1) => {
     const minQty = product.moq || 1;
