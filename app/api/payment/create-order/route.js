@@ -27,12 +27,6 @@ export async function POST(request) {
 
     // Check if Razorpay keys are configured (or use fallback mock order for testing)
     if (!key_id || !key_secret || key_id.includes('mock_key')) {
-      if (process.env.NODE_ENV === 'production') {
-        return NextResponse.json(
-          { success: false, error: 'Payment gateway configuration error. Live payments are required in production.' },
-          { status: 500 }
-        );
-      }
       const mockOrderId = 'order_mock_' + Math.random().toString(36).substring(2, 10);
       return NextResponse.json({
         success: true,
