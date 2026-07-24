@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { supabase } from '@/lib/supabase';
 
 const AuthContext = createContext();
+const ADMIN_SECRET = process.env.NEXT_PUBLIC_ADMIN_SECRET_TOKEN || '1234';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -81,7 +82,7 @@ export function AuthProvider({ children }) {
 
     // Verify Admin Token if registering as Admin
     if (isAdminMode || adminToken) {
-      if (adminToken !== '1234') {
+      if (adminToken !== ADMIN_SECRET) {
         return {
           success: false,
           error: 'Invalid Secret Admin Access Token! Only authorized admins are allowed to register.'
@@ -89,7 +90,7 @@ export function AuthProvider({ children }) {
       }
     }
 
-    const assignedRole = (isAdminMode || adminToken === '1234' || cleanEmail.startsWith('admin') || cleanUsername.startsWith('admin')) ? 'admin' : 'customer';
+    const assignedRole = (isAdminMode || adminToken === ADMIN_SECRET || cleanEmail.startsWith('admin') || cleanUsername.startsWith('admin')) ? 'admin' : 'customer';
 
     // Duplicate check
     const existingUser = registeredUsers.find(
@@ -178,7 +179,7 @@ export function AuthProvider({ children }) {
     const isAdminLoginAttempt = cleanEmail.startsWith('admin') || (adminToken && adminToken.trim() !== '');
 
     if (isAdminLoginAttempt) {
-      if (adminToken !== '1234') {
+      if (adminToken !== ADMIN_SECRET) {
         return {
           success: false,
           error: 'Invalid Admin Access Token! Please contact site owner for access.'
@@ -186,7 +187,7 @@ export function AuthProvider({ children }) {
       }
     }
 
-    const assignedRole = (adminToken === '1234' || cleanEmail.startsWith('admin')) ? 'admin' : 'customer';
+    const assignedRole = (adminToken === ADMIN_SECRET || cleanEmail.startsWith('admin')) ? 'admin' : 'customer';
 
     // 1. Try Supabase Auth
     try {

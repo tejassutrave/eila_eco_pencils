@@ -45,7 +45,8 @@ export default function AuthModal() {
         }
 
         const isAdmin = authMode === 'admin_signup';
-        if (isAdmin && adminToken !== '1234') {
+        const adminSecret = process.env.NEXT_PUBLIC_ADMIN_SECRET_TOKEN || '1234';
+        if (isAdmin && adminToken !== adminSecret) {
           setErrorMsg('Invalid Admin Secret Access Token! Please contact site owner for access.');
           setLoading(false);
           return;
