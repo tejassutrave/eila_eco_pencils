@@ -19,11 +19,13 @@ export default function AuthModal() {
   // Automatically reset form inputs whenever modal opens or mode changes
   useEffect(() => {
     if (isAuthModalOpen) {
-      setUsername('');
-      setEmail('');
-      setPassword('');
-      setAdminToken('');
-      setErrorMsg('');
+      setTimeout(() => {
+        setUsername('');
+        setEmail('');
+        setPassword('');
+        setAdminToken('');
+        setErrorMsg('');
+      }, 0);
     }
   }, [isAuthModalOpen, authMode]);
 

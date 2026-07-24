@@ -135,7 +135,7 @@ ON public.donations FOR SELECT TO authenticated USING (true);`;
           </h1>
 
           <p className="text-[#d8f3dc] text-base sm:text-lg max-w-2xl mx-auto font-normal leading-relaxed">
-            Don't burn or discard old newspaper stacks. We collect your paper waste right from your doorstep and transform it into 100% tree-free seed pencils!
+            Don&apos;t burn or discard old newspaper stacks. We collect your paper waste right from your doorstep and transform it into 100% tree-free seed pencils!
           </p>
 
           {/* Quick Metrics Bar */}

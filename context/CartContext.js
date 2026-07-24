@@ -17,13 +17,14 @@ export function CartProvider({ children }) {
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem(cartStorageKey);
-      if (savedCart) {
-        setCart(JSON.parse(savedCart));
-      } else {
-        setCart([]);
-      }
+      const parsedCart = savedCart ? JSON.parse(savedCart) : [];
+      setTimeout(() => {
+        setCart(parsedCart);
+      }, 0);
     } catch (e) {
-      setCart([]);
+      setTimeout(() => {
+        setCart([]);
+      }, 0);
     }
   }, [user, cartStorageKey]);
 

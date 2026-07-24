@@ -24,12 +24,13 @@ export default function AdminLoginPage() {
       if (error && !email.includes('admin@eila.com')) {
         alert(error.message || 'Invalid credentials');
       } else {
-        localStorage.setItem('eila_admin_session', JSON.stringify({ email, token: 'demo_token' }));
+        const token = data?.session?.access_token || 'demo_token';
+        localStorage.setItem('eila_admin_session', JSON.stringify({ email, token, timestamp: Date.now() }));
         router.push('/admin/dashboard');
       }
     } catch (err) {
       console.error(err);
-      localStorage.setItem('eila_admin_session', JSON.stringify({ email, token: 'demo_token' }));
+      localStorage.setItem('eila_admin_session', JSON.stringify({ email, token: 'demo_token', timestamp: Date.now() }));
       router.push('/admin/dashboard');
     } finally {
       setLoading(false);

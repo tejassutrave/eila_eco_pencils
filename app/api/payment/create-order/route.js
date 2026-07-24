@@ -1,8 +1,18 @@
 import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
+import { rateLimit } from '@/lib/rate-limiter';
 
 export async function POST(request) {
   try {
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
+    const limitRes = rateLimit(ip, 20, 60 * 1000); // 20 requests per minute
+    if (!limitRes.success) {
+      return NextResponse.json(
+        { success: false, error: limitRes.error },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(limitRes.reset / 1000)) } }
+      );
+    }
+
     const { amount, currency = 'INR', customerName, customerEmail } = await request.json();
 
     if (!amount || amount <= 0) {
@@ -17,6 +27,12 @@ export async function POST(request) {
 
     // Check if Razorpay keys are configured (or use fallback mock order for testing)
     if (!key_id || !key_secret || key_id.includes('mock_key')) {
+      if (process.env.NODE_ENV === 'production') {
+        return NextResponse.json(
+          { success: false, error: 'Payment gateway configuration error. Live payments are required in production.' },
+          { status: 500 }
+        );
+      }
       const mockOrderId = 'order_mock_' + Math.random().toString(36).substring(2, 10);
       return NextResponse.json({
         success: true,

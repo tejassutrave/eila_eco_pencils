@@ -6,6 +6,8 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { ShieldCheck, Lock, ArrowLeft, CheckCircle2, MessageSquare, LogIn, AlertCircle } from 'lucide-react';
 
+const generateMockPaymentId = () => 'pay_test_' + Math.random().toString(36).substring(2, 8);
+
 export default function CheckoutPage() {
   const { cart, subtotal, shippingFee, grandTotal, clearCart } = useCart();
   const { user, openAuthModal } = useAuth();
@@ -26,11 +28,18 @@ export default function CheckoutPage() {
   // Auto-fill user email and name if logged in
   useEffect(() => {
     if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        name: prev.name || user.username || '',
-        email: prev.email || user.email || ''
-      }));
+      setTimeout(() => {
+        setFormData((prev) => {
+          if (prev.name === (user.username || '') && prev.email === (user.email || '')) {
+            return prev;
+          }
+          return {
+            ...prev,
+            name: prev.name || user.username || '',
+            email: prev.email || user.email || ''
+          };
+        });
+      }, 0);
     }
   }, [user]);
 
@@ -104,7 +113,7 @@ export default function CheckoutPage() {
       } else {
         await verifyPayment({
           razorpay_order_id: orderData.order_id,
-          razorpay_payment_id: 'pay_test_' + Math.random().toString(36).substring(2, 8),
+          razorpay_payment_id: generateMockPaymentId(),
           razorpay_signature: 'sig_test_mock',
           is_mock: true
         });

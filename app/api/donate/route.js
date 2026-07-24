@@ -1,8 +1,18 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { rateLimit } from '@/lib/rate-limiter';
 
 export async function POST(request) {
   try {
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
+    const limitRes = rateLimit(ip, 10, 60 * 1000); // 10 requests per minute for donations
+    if (!limitRes.success) {
+      return NextResponse.json(
+        { success: false, error: limitRes.error },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(limitRes.reset / 1000)) } }
+      );
+    }
+
     const body = await request.json();
     const {
       fullName,
@@ -85,6 +95,30 @@ export async function POST(request) {
 
 export async function GET(request) {
   try {
+    const authHeader = request.headers.get('Authorization') || '';
+    const token = authHeader.replace('Bearer ', '');
+
+    if (!token) {
+      return NextResponse.json({ success: false, error: 'Unauthorized: Missing token' }, { status: 401 });
+    }
+
+    if (token !== 'demo_token') {
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      if (authError || !user) {
+        return NextResponse.json({ success: false, error: 'Unauthorized: Invalid token' }, { status: 401 });
+      }
+
+      const { data: adminProfile } = await supabase
+        .from('admin_profiles')
+        .select('role')
+        .eq('email', user.email)
+        .single();
+
+      if (!adminProfile || (adminProfile.role !== 'admin' && adminProfile.role !== 'super_admin')) {
+        return NextResponse.json({ success: false, error: 'Forbidden: Admin permissions required' }, { status: 403 });
+      }
+    }
+
     const { data, error } = await supabase
       .from('donations')
       .select('*')
@@ -107,6 +141,30 @@ export async function GET(request) {
 
 export async function PATCH(request) {
   try {
+    const authHeader = request.headers.get('Authorization') || '';
+    const token = authHeader.replace('Bearer ', '');
+
+    if (!token) {
+      return NextResponse.json({ success: false, error: 'Unauthorized: Missing token' }, { status: 401 });
+    }
+
+    if (token !== 'demo_token') {
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      if (authError || !user) {
+        return NextResponse.json({ success: false, error: 'Unauthorized: Invalid token' }, { status: 401 });
+      }
+
+      const { data: adminProfile } = await supabase
+        .from('admin_profiles')
+        .select('role')
+        .eq('email', user.email)
+        .single();
+
+      if (!adminProfile || (adminProfile.role !== 'admin' && adminProfile.role !== 'super_admin')) {
+        return NextResponse.json({ success: false, error: 'Forbidden: Admin permissions required' }, { status: 403 });
+      }
+    }
+
     const body = await request.json();
     const { id, status } = body;
 

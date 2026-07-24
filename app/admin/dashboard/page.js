@@ -12,6 +12,36 @@ export default function AdminDashboardPage() {
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
   const [activeTab, setActiveTab] = useState('analytics'); // 'analytics' | 'inventory' | 'orders' | 'inquiries' | 'profile'
 
+  // client-side auth state
+  const [authorized, setAuthorized] = useState(false);
+
+  useEffect(() => {
+    const sessionStr = localStorage.getItem('eila_admin_session');
+    if (!sessionStr) {
+      router.push('/admin/login');
+    } else {
+      try {
+        const session = JSON.parse(sessionStr);
+        const TIMEOUT_DURATION = 12 * 60 * 60 * 1000; // 12 hours sliding timeout
+        
+        if (session.timestamp && (Date.now() - session.timestamp > TIMEOUT_DURATION)) {
+          localStorage.removeItem('eila_admin_session');
+          router.push('/admin/login');
+        } else {
+          // Slide expiration (update activity timestamp)
+          session.timestamp = Date.now();
+          localStorage.setItem('eila_admin_session', JSON.stringify(session));
+          setTimeout(() => {
+            setAuthorized(true);
+          }, 0);
+        }
+      } catch (e) {
+        localStorage.removeItem('eila_admin_session');
+        router.push('/admin/login');
+      }
+    }
+  }, [router]);
+
   // Admin Profile Info
   const adminInfo = {
     adminCode: 'ADM-SUPER-01',
@@ -135,7 +165,15 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const res = await fetch('/api/donate');
+        const sessionStr = localStorage.getItem('eila_admin_session');
+        const session = sessionStr ? JSON.parse(sessionStr) : null;
+        const token = session?.token || 'demo_token';
+
+        const res = await fetch('/api/donate', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         const result = await res.json();
         if (result.success && result.data && result.data.length > 0) {
           setDonations((prevMock) => {
@@ -161,9 +199,16 @@ export default function AdminDashboardPage() {
 
     if (isRealDbId) {
       try {
+        const sessionStr = localStorage.getItem('eila_admin_session');
+        const session = sessionStr ? JSON.parse(sessionStr) : null;
+        const token = session?.token || 'demo_token';
+
         const res = await fetch('/api/donate', {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({ id: donationId, status: newStatus }),
         });
         const result = await res.json();
@@ -206,8 +251,20 @@ export default function AdminDashboardPage() {
   };
 
   const handleLogout = async () => {
+    localStorage.removeItem('eila_admin_session');
     await signOut();
   };
+
+  if (!authorized) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#faf9f5]">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 rounded-full border-4 border-[#1b4332] border-t-transparent animate-spin mx-auto" />
+          <p className="text-xs text-[#4a5e55]">Authenticating administrative access...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">

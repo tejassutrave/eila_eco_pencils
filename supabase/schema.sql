@@ -208,27 +208,43 @@ ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.newspaper_donations ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policy Definitions
-CREATE POLICY "Allow public select profiles" ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "Allow public insert profiles" ON public.profiles FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update profiles" ON public.profiles FOR UPDATE USING (true);
+CREATE POLICY "Allow public select profiles" ON public.profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Allow public insert profiles" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "Allow public update profiles" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY "Allow public select admin profiles" ON public.admin_profiles FOR SELECT USING (true);
-CREATE POLICY "Allow public insert admin profiles" ON public.admin_profiles FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update admin profiles" ON public.admin_profiles FOR UPDATE USING (true);
+CREATE POLICY "Allow public select admin profiles" ON public.admin_profiles FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Allow public update admin profiles" ON public.admin_profiles FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can manage own cart" ON public.user_carts FOR ALL USING (true);
-CREATE POLICY "Users can manage own cart items" ON public.user_cart_items FOR ALL USING (true);
+CREATE POLICY "Users can manage own cart" ON public.user_carts FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own cart items" ON public.user_cart_items FOR ALL USING (
+  EXISTS (
+    SELECT 1 FROM public.user_carts 
+    WHERE user_carts.id = user_cart_items.cart_id 
+    AND user_carts.user_id = auth.uid()
+  )
+);
 
 CREATE POLICY "Public categories are viewable by everyone" ON public.categories FOR SELECT USING (true);
 CREATE POLICY "Active products are viewable by everyone" ON public.products FOR SELECT USING (active = true);
 CREATE POLICY "Product images are viewable by everyone" ON public.product_images FOR SELECT USING (true);
 
 CREATE POLICY "Allow order insertion" ON public.orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (true);
+CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Allow order items insertion" ON public.order_items FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can view own order items" ON public.order_items FOR SELECT USING (
+  EXISTS (
+    SELECT 1 FROM public.orders 
+    WHERE orders.id = order_items.order_id 
+    AND orders.user_id = auth.uid()
+  )
+);
 CREATE POLICY "Allow inquiries insertion" ON public.inquiries FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow public insert to newspaper_donations" ON public.newspaper_donations FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow admin select newspaper_donations" ON public.newspaper_donations FOR SELECT USING (true);
+CREATE POLICY "Allow admin select newspaper_donations" ON public.newspaper_donations FOR SELECT USING (
+  EXISTS (
+    SELECT 1 FROM public.admin_profiles WHERE user_id = auth.uid()
+  )
+);
 
 -- FRESH INITIAL SEED DATA
 INSERT INTO public.categories (name, slug, description) VALUES

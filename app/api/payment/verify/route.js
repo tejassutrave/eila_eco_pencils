@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { supabase } from '@/lib/supabase';
+import { rateLimit } from '@/lib/rate-limiter';
 
 export async function POST(request) {
   try {
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
+    const limitRes = rateLimit(ip, 20, 60 * 1000); // 20 requests per minute
+    if (!limitRes.success) {
+      return NextResponse.json(
+        { success: false, error: limitRes.error },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(limitRes.reset / 1000)) } }
+      );
+    }
+
     const body = await request.json();
     const {
       razorpay_order_id,

@@ -20,6 +20,12 @@ const inter = Inter({
   display: 'swap',
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata = {
   title: 'Eila Eco Products — Plantable Seed & Recycled Newspaper Stationery',
   description: 'Shop 100% tree-free recycled newspaper pencils, plantable seed pens, handmade newspaper pouches, and customizable carry bags by Bilva Enterprise, Dharwad. Premium eco-stationery & corporate gifting.',

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Leaf, Sprout, Trees, Recycle, ArrowRight } from 'lucide-react';
+import { Leaf, Sprout, Trees, Recycle, ArrowRight, Users, BookOpen, Eye, ShoppingBag } from 'lucide-react';
 
 export default function SustainabilityPage() {
   return (
@@ -18,7 +18,7 @@ export default function SustainabilityPage() {
           Turning Waste into Greenery
         </h1>
         <p className="text-base text-[#3b5247] leading-relaxed">
-          At Eila Eco Products, we believe we don't need to damage or destroy the environment to live a healthy, happy, and sustained life. We are changing the narrative from consumption to conservation.
+          At Eila Eco Products, we believe we don&apos;t need to damage or destroy the environment to live a healthy, happy, and sustained life. We are changing the narrative from consumption to conservation.
         </p>
 
         {/* Why Us? Deforestation Alert Card */}
@@ -28,44 +28,66 @@ export default function SustainabilityPage() {
             Nearly <strong>82,000 mature trees</strong> are cut down daily to produce the 14 billion traditional wood-based pencils used globally every year. Wooden pencils are a major cause of global deforestation, contributing to climate damage and disturbing vital natural ecosystems.
           </p>
           <p className="font-bold text-[#1b4332]">
-            Eila's response: "Planting the Future" — swapping timber for upcycled waste paper and embedding seed capsules that grow back into greenery!
+            Eila&apos;s response: &quot;Planting the Future&quot; — swapping timber for upcycled waste paper and embedding seed capsules that grow back into greenery!
           </p>
         </div>
       </div>
 
       {/* Impact Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         
-        <div className="bg-white border border-[#e8e6da] rounded-3xl p-8 text-center space-y-3 shadow-sm">
-          <div className="w-16 h-16 rounded-2xl bg-[#e8f5e9] text-[#1b4332] flex items-center justify-center mx-auto shadow-inner">
-            <Trees className="w-8 h-8" />
+        <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 text-center space-y-3 shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 rounded-2xl bg-[#e8f5e9] text-[#1b4332] flex items-center justify-center mx-auto shadow-inner">
+            <Recycle className="w-6 h-6" />
           </div>
-          <span className="text-4xl font-black text-[#0f231c] block">100,000+</span>
-          <h3 className="font-bold text-[#1b4332] text-sm">Trees Preserved From Deforestation</h3>
-          <p className="text-xs text-[#4a5e55] leading-relaxed">
-            By upcycling discarded old newspapers, we eliminate the need for virgin timber in pencil manufacturing.
+          <span className="text-3xl font-black text-[#0f231c] block">12+ Tons</span>
+          <h3 className="font-bold text-[#1b4332] text-xs">Newspaper Repurposed</h3>
+          <p className="text-[10px] text-[#4a5e55] leading-relaxed">
+            Waste post-consumer newspapers upcycled directly into pencils, bags, and pouches, keeping them out of landfills.
           </p>
         </div>
 
-        <div className="bg-white border border-[#e8e6da] rounded-3xl p-8 text-center space-y-3 shadow-sm">
-          <div className="w-16 h-16 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto shadow-inner">
-            <Sprout className="w-8 h-8" />
+        <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 text-center space-y-3 shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto shadow-inner">
+            <ShoppingBag className="w-6 h-6" />
           </div>
-          <span className="text-4xl font-black text-amber-600 block">50,000+</span>
-          <h3 className="font-bold text-[#1b4332] text-sm">Plantable Seeds Sprouted</h3>
-          <p className="text-xs text-[#4a5e55] leading-relaxed">
-            Every pencil stub planted contributes organic herbs, marigolds, and sunflowers to home gardens across India.
+          <span className="text-3xl font-black text-amber-600 block">2,00,000+</span>
+          <h3 className="font-bold text-[#1b4332] text-xs">Eco-Products Sold</h3>
+          <p className="text-[10px] text-[#4a5e55] leading-relaxed">
+            Green products sold since inception, replacement-proofing everyday routines against traditional plastic/wood stationery.
           </p>
         </div>
 
-        <div className="bg-white border border-[#e8e6da] rounded-3xl p-8 text-center space-y-3 shadow-sm">
-          <div className="w-16 h-16 rounded-2xl bg-[#e8f5e9] text-[#52b788] flex items-center justify-center mx-auto shadow-inner">
-            <Recycle className="w-8 h-8" />
+        <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 text-center space-y-3 shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 rounded-2xl bg-[#e8f5e9] text-[#52b788] flex items-center justify-center mx-auto shadow-inner">
+            <Users className="w-6 h-6" />
           </div>
-          <span className="text-4xl font-black text-[#2d6a4f] block">10+ Tons</span>
-          <h3 className="font-bold text-[#1b4332] text-sm">Newsprint Recycled From Landfills</h3>
-          <p className="text-xs text-[#4a5e55] leading-relaxed">
-            We intercept discarded post-consumer newspaper waste and transform it into smooth, durable pencil barrels.
+          <span className="text-3xl font-black text-[#2d6a4f] block">12+</span>
+          <h3 className="font-bold text-[#1b4332] text-xs">Women Empowered</h3>
+          <p className="text-[10px] text-[#4a5e55] leading-relaxed">
+            Local and rural women trained and employed in crafting Eila supplies, securing active financial self-reliance.
+          </p>
+        </div>
+
+        <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 text-center space-y-3 shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center mx-auto shadow-inner">
+            <BookOpen className="w-6 h-6" />
+          </div>
+          <span className="text-3xl font-black text-blue-700 block">50+</span>
+          <h3 className="font-bold text-[#1b4332] text-xs">Institutions Reached</h3>
+          <p className="text-[10px] text-[#4a5e55] leading-relaxed">
+            Schools and colleges reached to promote environmental education and distribute free samples.
+          </p>
+        </div>
+
+        <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 text-center space-y-3 shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center mx-auto shadow-inner">
+            <Eye className="w-6 h-6" />
+          </div>
+          <span className="text-3xl font-black text-purple-700 block">10,000+</span>
+          <h3 className="font-bold text-[#1b4332] text-xs">Citizens Aware</h3>
+          <p className="text-[10px] text-[#4a5e55] leading-relaxed">
+            Individuals reached directly through environmental campaigns, fairs, roadshows, and webinars.
           </p>
         </div>
 
@@ -121,7 +143,7 @@ export default function SustainabilityPage() {
           </span>
           <h2 className="text-3xl font-extrabold text-[#0f231c]">The Mathematics of Recycling</h2>
           <p className="text-xs text-[#4a5e55]">
-            "There is a new generational worldwide wave occurring, moving in an environmentally conscious direction... Don't get left behind."
+            &quot;There is a new generational worldwide wave occurring, moving in an environmentally conscious direction... Don&apos;t get left behind.&quot;
           </p>
         </div>
 
@@ -138,7 +160,7 @@ export default function SustainabilityPage() {
             <span className="text-2xl">🌲</span>
             <h4 className="font-extrabold text-[#0f231c] text-xs">1 Ton of Wood Preserved</h4>
             <p className="text-[11px] text-[#4a5e55] leading-relaxed">
-              Every ton of newspaper upcycled saves approximately 1 ton of raw wood. Upcycling half the world's paper would protect over 20 million acres of forests.
+              Every ton of newspaper upcycled saves approximately 1 ton of raw wood. Upcycling half the world&apos;s paper would protect over 20 million acres of forests.
             </p>
           </div>
 
@@ -155,10 +177,57 @@ export default function SustainabilityPage() {
               <Leaf className="w-4 h-4 text-[#2d6a4f]" /> Reduced Manufacturing Footprint
             </h4>
             <p className="text-[11px] text-[#4a5e55] leading-relaxed">
-              By using post-consumer recycled paper instead of harvesting virgin pulp, we drastically reduce air emissions and wastewater pollution associated with primary chemical pulping. The world's ecosystem is suffering; Eila provides a simple, daily adjustment to protect environmental health.
+              By using post-consumer recycled paper instead of harvesting virgin pulp, we drastically reduce air emissions and wastewater pollution associated with primary chemical pulping. The world&apos;s ecosystem is suffering; Eila provides a simple, daily adjustment to protect environmental health.
             </p>
           </div>
         </div>
+      </section>
+
+      {/* Scaling Capacity: Machine Automation & Handcrafted Integrity */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-t border-[#e8e6da] pt-16">
+        
+        {/* Machine Automation roadmap */}
+        <div className="lg:col-span-7 bg-white border border-[#e8e6da] rounded-[2rem] p-8 space-y-4 shadow-sm">
+          <div className="space-y-1">
+            <span className="text-[10px] font-black text-amber-600 bg-amber-100 px-3 py-1 rounded-full uppercase tracking-wider inline-block">Upcoming Development</span>
+            <h3 className="font-extrabold text-lg text-[#0f231c]">Next-Gen Machine Automation Roadmap</h3>
+          </div>
+          <p className="text-xs text-[#4a5e55] leading-relaxed">
+            We are currently developing an <strong>automated version of our pencil production machine</strong>. This mechanical innovation is designed to solve operational constraints and scale Eila globally:
+          </p>
+          <ul className="text-xs text-[#4a5e55] space-y-2.5 list-disc pl-5">
+            <li><strong>Scaling Production:</strong> Significantly increases daily manufacturing capacity to meet wholesale corporate demands.</li>
+            <li><strong>Reducing Physical Labor:</strong> Automates repetitive manual rolling processes to reduce strain on our women artisans.</li>
+            <li><strong>Handcrafted Eco Integrity:</strong> Speeds up the core rolling while maintaining our strict handcrafted checking and 100% tree-free material integrity.</li>
+          </ul>
+        </div>
+
+        {/* Expanded Product Portfolio */}
+        <div className="lg:col-span-5 bg-white border border-[#e8e6da] rounded-[2rem] p-8 space-y-4 shadow-sm">
+          <h3 className="font-extrabold text-lg text-[#0f231c] flex items-center gap-2">
+            <span>✨</span> Expanded Zero-Waste Crafts
+          </h3>
+          <p className="text-xs text-[#4a5e55] leading-relaxed">
+            Eila&apos;s design ecosystem transforms several categories of post-consumer waste into valuable everyday craft items:
+          </p>
+          <div className="space-y-3 pt-1">
+            <div className="flex gap-3 text-xs bg-[#faf9f5] border border-[#e8e6da] p-3 rounded-2xl">
+              <span className="text-xl shrink-0">🥥</span>
+              <div>
+                <strong className="text-[#0f231c] block">Coconut Shell Bowls</strong>
+                <span className="text-[10px] text-[#4a5e55]">Polished, food-safe bowls upcycled from discarded coconut shells.</span>
+              </div>
+            </div>
+            <div className="flex gap-3 text-xs bg-[#faf9f5] border border-[#e8e6da] p-3 rounded-2xl">
+              <span className="text-xl shrink-0">🧵</span>
+              <div>
+                <strong className="text-[#0f231c] block">Patchwork Cloth Blankets</strong>
+                <span className="text-[10px] text-[#4a5e55]">Comfortable blankets stitched together entirely from local textile scrap pieces.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       <div className="text-center">

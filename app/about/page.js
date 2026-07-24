@@ -61,10 +61,10 @@ export default function AboutPage() {
         <div className="bg-[#faf9f5] border border-[#e8e6da] rounded-2xl p-5 max-w-2xl text-center space-y-2 shadow-sm mt-4">
           <span className="text-[10px] font-black text-[#2d6a4f] uppercase tracking-widest block">Eila... What does it mean?</span>
           <p className="text-sm font-semibold text-[#0f231c]">
-            The meaning of <span className="font-extrabold text-[#1b4332]">Eila</span> in Sanskrit is <span className="font-black italic">"The Earth"</span> (इला).
+            The meaning of <span className="font-extrabold text-[#1b4332]">Eila</span> in Sanskrit is <span className="font-black italic">&quot;The Earth&quot;</span> (इला).
           </p>
           <p className="text-xs text-[#4a5e55] leading-relaxed">
-            Our Eila brand focuses on living a life with more natural, biological products. We don't need to damage or destroy the environment to live a healthy, happy, and sustained life.
+            Our Eila brand focuses on living a life with more natural, biological products. We don&apos;t need to damage or destroy the environment to live a healthy, happy, and sustained life.
           </p>
         </div>
       </div>
@@ -75,10 +75,13 @@ export default function AboutPage() {
         <div className="space-y-4 text-[#3b5247] text-sm leading-relaxed">
           <h2 className="text-3xl font-extrabold text-[#0f231c]">Empowering Women — Empowering Nation</h2>
           <p>
-            Our core mission is to reduce local waste, protect the environment, and create sustainable, dignified livelihoods for local women artisans. We believe in creating wealth from waste to build a truly circular economy.
+            India generates over <strong>62 million tons of waste annually</strong>, a large portion of which ends up in landfills, rivers, or is burned—contributing to severe air, land, and water pollution. At the same time, many women from economically disadvantaged backgrounds face unemployment or underemployment, especially in semi-urban and rural areas.
+          </p>
+          <p>
+            Eila is a grassroots-driven social innovation that tackles these intersecting challenges. We have developed a sustainable production ecosystem that upcycles discarded newspapers, textile scraps, and coconut shells into valuable everyday items, creating active fair-wage jobs and financial independence for local women.
           </p>
           <p className="italic text-[#1b4332] font-semibold border-l-4 border-[#52b788] pl-4 my-2">
-            "We are here to lead society in different aspects of products that will never harm nature."
+            &quot;We are here to lead society in different aspects of products that will never harm nature.&quot;
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
             <div className="p-5 bg-white border border-[#e8e6da] rounded-3xl space-y-2 shadow-sm">
@@ -105,7 +108,7 @@ export default function AboutPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-emerald-600 shrink-0 mt-0.5">🌱</span>
-                  <span><strong>A Step Forward:</strong> "A step to save Nature, We are in the way to serve for our nature."</span>
+                  <span><strong>A Step Forward:</strong> &quot;A step to save Nature, We are in the way to serve for our nature.&quot;</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-emerald-600 shrink-0 mt-0.5">♻️</span>
@@ -290,7 +293,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="font-black text-sm text-[#0f231c] uppercase tracking-wide">The Eila Story</h3>
-                  <span className="text-[10px] text-[#4a5e55]">Founder Mrs. Aparna Pujari's Journey</span>
+                  <span className="text-[10px] text-[#4a5e55]">Founder Mrs. Aparna Pujari&apos;s Journey</span>
                 </div>
               </div>
               <button
@@ -431,6 +434,85 @@ export default function AboutPage() {
         </div>
       )}
 
+      {/* Partnerships & Future Scaling */}
+      <section className="space-y-8 border-t border-[#e8e6da] pt-16">
+        
+        <div className="text-center max-w-3xl mx-auto space-y-2">
+          <span className="bg-[#e8f5e9] text-[#1b4332] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider inline-flex items-center gap-1.5 border border-[#b7e4c7]">
+            🤝 Synergy & Growth
+          </span>
+          <h2 className="text-3xl font-extrabold text-[#0f231c]">Partnerships & Future Scaling</h2>
+          <p className="text-xs text-[#4a5e55]">
+            Eila is more than a business—it’s a collaborative movement. We combine economic viability with social and environmental impact.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Sourcing & Distribution Alliances */}
+          <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-4 shadow-sm">
+            <h3 className="font-extrabold text-sm text-[#0f231c] border-b border-[#e8e6da] pb-2 flex items-center gap-2">
+              <span>🔗</span> Sourcing & Distribution Network
+            </h3>
+            <ul className="text-xs text-[#4a5e55] space-y-3">
+              <li>
+                <strong>Resident Welfare Associations (RWAs):</strong> We coordinate with local housing communities to intercept waste newspaper at the source.
+              </li>
+              <li>
+                <strong>Educational Institutions:</strong> MoUs and partnerships with schools and colleges allow us to run awareness drives and distribute eco-stationery.
+              </li>
+              <li>
+                <strong>Local NGOs:</strong> We collaborate with non-profits to mobilize, train, and support rural women in the region.
+              </li>
+              <li>
+                <strong>Corporate CSR Programs:</strong> Partnerships for bulk supply help finance our operational framework and community programs.
+              </li>
+            </ul>
+          </div>
+
+          {/* Funding & Scaling */}
+          <div className="bg-white border border-[#e8e6da] rounded-3xl p-6 space-y-4 shadow-sm">
+            <h3 className="font-extrabold text-sm text-[#0f231c] border-b border-[#e8e6da] pb-2 flex items-center gap-2">
+              <span>💰</span> Funding & Financial Foundations
+            </h3>
+            <ul className="text-xs text-[#4a5e55] space-y-3">
+              <li>
+                <strong>Bootstrapped Beginnings:</strong> Eila was initially funded entirely through the founder&apos;s personal savings.
+              </li>
+              <li>
+                <strong>Revenue-Funded Scale:</strong> We have sustained organic, revenue-funded growth over the past three years.
+              </li>
+              <li>
+                <strong>Grants & Impact Investment:</strong> We are currently exploring social impact capital and government grants to scale up our manufacturing.
+              </li>
+            </ul>
+          </div>
+
+          {/* Competitor Advantage */}
+          <div className="bg-[#1b4332] text-white rounded-3xl p-6 space-y-4 border border-[#2d6a4f] shadow-md">
+            <h3 className="font-extrabold text-sm text-[#74c69d] border-b border-[#2d6a4f] pb-2 flex items-center gap-2">
+              <span>🏆</span> Why Eila Stands Apart
+            </h3>
+            <ul className="text-xs text-[#b7e4c7] space-y-3">
+              <li>
+                <strong>True Zero-Waste Cycle:</strong> Unlike brands that recycle partially, our raw materials are entirely upcycled without creating secondary industrial waste.
+              </li>
+              <li>
+                <strong>Women-Centered Impact:</strong> Direct social upliftment is integrated into our core business rather than added as a marketing afterthought.
+              </li>
+              <li>
+                <strong>Hyper-Local Sourcing:</strong> All newspapers, textile waste, and coconut shells are sourced locally in Dharwad, Karnataka.
+              </li>
+              <li>
+                <strong>Direct Outreach:</strong> Engaging citizens through roadshows, eco fairs, and webinars to build a community of conscious consumers.
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+      </section>
+
       {/* CUSTOMER GROWING STORIES & COMMUNITY PLANT GALLERY */}
       <section className="space-y-10 border-t border-[#e8e6da] pt-16">
         
@@ -463,7 +545,7 @@ export default function AboutPage() {
                 </div>
 
                 <p className="text-xs text-[#3b5247] italic leading-relaxed">
-                  "{story.review}"
+                  &quot;{story.review}&quot;
                 </p>
               </div>
 
