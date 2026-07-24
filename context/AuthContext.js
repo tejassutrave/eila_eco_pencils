@@ -84,7 +84,7 @@ export function AuthProvider({ children }) {
       if (adminToken !== '1234') {
         return {
           success: false,
-          error: 'Invalid Secret Admin Access Token! Only authorized admins can use token 1234.'
+          error: 'Invalid Secret Admin Access Token! Only authorized admins are allowed to register.'
         };
       }
     }
@@ -181,7 +181,7 @@ export function AuthProvider({ children }) {
       if (adminToken !== '1234') {
         return {
           success: false,
-          error: 'Invalid Admin Access Token! Enter "1234" to sign in to Admin Portal.'
+          error: 'Invalid Admin Access Token! Please contact site owner for access.'
         };
       }
     }

@@ -46,7 +46,7 @@ export default function AuthModal() {
 
         const isAdmin = authMode === 'admin_signup';
         if (isAdmin && adminToken !== '1234') {
-          setErrorMsg('Invalid Admin Secret Access Token! Please enter "1234" to create an admin account.');
+          setErrorMsg('Invalid Admin Secret Access Token! Please contact site owner for access.');
           setLoading(false);
           return;
         }
@@ -120,7 +120,7 @@ export default function AuthModal() {
           </h3>
           <p className="text-xs text-[#4a5e55]">
             {authMode === 'admin_signup'
-              ? 'Admin Registration (Secret Access Token 1234 Required)'
+              ? 'Admin Registration (Secret Access Token Required)'
               : authMode === 'signup'
               ? 'Sign up to keep your shopping cart saved to your account!'
               : 'Sign in to access your saved cart & orders.'}
@@ -220,18 +220,15 @@ export default function AuthModal() {
           {/* Admin Access Token Field */}
           {(authMode === 'admin_signup' || authMode === 'login') && (
             <div>
-              <label className="block text-xs font-bold text-[#0f231c] mb-1 flex items-center justify-between">
-                <span>Admin Secret Token {authMode === 'admin_signup' ? '*' : '(Optional)'}</span>
-                <span className="text-[10px] text-amber-700 font-bold bg-amber-100 px-2 py-0.5 rounded-full">
-                  Secret: 1234
-                </span>
+              <label className="block text-xs font-bold text-[#0f231c] mb-1">
+                Admin Secret Token {authMode === 'admin_signup' ? '*' : '(Optional)'}
               </label>
               <div className="relative">
                 <Key className="w-4 h-4 text-amber-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="password"
                   required={authMode === 'admin_signup'}
-                  placeholder="Enter 1234 for Admin Access"
+                  placeholder="Enter Admin Access Token"
                   value={adminToken}
                   onChange={(e) => setAdminToken(e.target.value)}
                   className="w-full bg-[#faf9f5] border border-[#e8e6da] rounded-xl pl-10 pr-4 py-2.5 text-xs text-[#0f231c] placeholder-[#6c8075] focus:outline-none focus:border-amber-500 font-mono"
@@ -250,7 +247,7 @@ export default function AuthModal() {
             {loading
               ? 'Verifying...'
               : authMode === 'admin_signup'
-              ? 'Create Admin Account (1234) →'
+              ? 'Create Admin Account →'
               : authMode === 'signup'
               ? 'Create Customer Account →'
               : 'Sign In Now →'}
