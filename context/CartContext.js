@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -15,24 +15,39 @@ export function CartProvider({ children }) {
   // Compute storage key based on active user state
   const cartStorageKey = user?.id ? `eila_cart_${user.id}` : 'eila_cart_guest';
 
-  // Synchronize cart whenever user logs in or out
+  // Synchronize cart whenever user logs in or out (waits for AuthContext loading to be false)
   useEffect(() => {
+    if (authLoading) {
+      console.log('[Cart Lifecycle] Waiting for AuthContext session restoration...');
+      return;
+    }
+
     const loadCart = async () => {
       setIsLoaded(false);
+      console.log(`[Cart Lifecycle] Auth session restored. User ID: ${user?.id || 'GUEST'}`);
+
+      // 1. Restore local cached cart immediately before any network request
+      let cachedCart = [];
+      try {
+        const savedCart = localStorage.getItem(cartStorageKey);
+        cachedCart = savedCart ? JSON.parse(savedCart) : [];
+        console.log('[Cart Lifecycle] Cached cart loaded:', cachedCart);
+        setCart(cachedCart);
+      } catch (e) {
+        console.warn('[Cart Lifecycle] Failed to parse cached cart:', e);
+      }
+
       if (!user?.id) {
-        // If guest, load from localStorage
-        try {
-          const savedCart = localStorage.getItem('eila_cart_guest');
-          setCart(savedCart ? JSON.parse(savedCart) : []);
-        } catch (e) {
-          setCart([]);
-        }
+        // Guest user loading complete using local cache
+        setIsLoaded(true);
+        console.log('[Cart Lifecycle] Final React cart state (Guest):', cachedCart);
         return;
       }
 
-      // If logged in, fetch from Supabase
+      // 2. Fetch from Supabase after auth session is ready
       try {
-        // 1. Get or create cart record
+        console.log('[Cart Lifecycle] Fetching cart from Supabase database for user:', user.id);
+        
         let { data: dbCart, error: cartErr } = await supabase
           .from('user_carts')
           .select('id')
@@ -40,81 +55,91 @@ export function CartProvider({ children }) {
           .single();
 
         if (cartErr && cartErr.code === 'PGRST116') {
-          const { data: newCart } = await supabase
+          console.log('[Cart Lifecycle] Database cart not found. Creating a new cart for user...');
+          const { data: newCart, error: createErr } = await supabase
             .from('user_carts')
             .insert({ user_id: user.id })
             .select('id')
             .single();
+          if (createErr) throw createErr;
           dbCart = newCart;
+        } else if (cartErr) {
+          throw cartErr;
         }
 
         if (dbCart?.id) {
-          // 2. Fetch cart items
           const { data: items, error: itemsErr } = await supabase
             .from('user_cart_items')
             .select('quantity, product_id, products(*)')
             .eq('cart_id', dbCart.id);
 
-          if (!itemsErr && items) {
+          if (itemsErr) throw itemsErr;
+
+          if (items) {
             const mappedCart = items.map(item => ({
               ...item.products,
               quantity: item.quantity
             }));
-            
-            // 3. Merge guest cart items if they exist
+            console.log('[Cart Lifecycle] Database cart loaded:', mappedCart);
+
+            // Merge guest cart items if they exist in localStorage (login event)
             const guestCartStr = localStorage.getItem('eila_cart_guest');
             if (guestCartStr) {
-              const guestCart = JSON.parse(guestCartStr);
-              if (guestCart.length > 0) {
-                for (const guestItem of guestCart) {
-                  const existingItem = mappedCart.find(i => i.id === guestItem.id);
-                  if (existingItem) {
-                    existingItem.quantity += guestItem.quantity;
-                    await supabase
-                      .from('user_cart_items')
-                      .update({ quantity: existingItem.quantity })
-                      .eq('cart_id', dbCart.id)
-                      .eq('product_id', guestItem.id);
-                  } else {
-                    mappedCart.push(guestItem);
-                    await supabase
-                      .from('user_cart_items')
-                      .insert({
-                        cart_id: dbCart.id,
-                        product_id: guestItem.id,
-                        quantity: guestItem.quantity
-                      });
+              try {
+                const guestCart = JSON.parse(guestCartStr);
+                if (guestCart.length > 0) {
+                  console.log('[Cart Lifecycle] Merging guest cart items into database:', guestCart);
+                  for (const guestItem of guestCart) {
+                    const existingItem = mappedCart.find(i => i.id === guestItem.id);
+                    if (existingItem) {
+                      existingItem.quantity += guestItem.quantity;
+                      await supabase
+                        .from('user_cart_items')
+                        .update({ quantity: existingItem.quantity })
+                        .eq('cart_id', dbCart.id)
+                        .eq('product_id', guestItem.id);
+                    } else {
+                      mappedCart.push(guestItem);
+                      await supabase
+                        .from('user_cart_items')
+                        .insert({
+                          cart_id: dbCart.id,
+                          product_id: guestItem.id,
+                          quantity: guestItem.quantity
+                        });
+                    }
                   }
+                  localStorage.removeItem('eila_cart_guest');
+                  console.log('[Cart Lifecycle] Guest cart merged successfully.');
                 }
-                localStorage.removeItem('eila_cart_guest');
+              } catch (mergeErr) {
+                console.warn('[Cart Lifecycle] Guest cart merge warning:', mergeErr);
               }
             }
 
+            // Only overwrite cached cart if database query was fully successful
             setCart(mappedCart);
             setIsLoaded(true);
+            console.log('[Cart Lifecycle] Final React cart state (Database):', mappedCart);
             return;
           }
         }
       } catch (err) {
-        console.error('Failed to sync DB cart:', err);
+        console.error('[Cart Lifecycle] Supabase fetch error (operating in graceful offline cache mode):', err);
       }
 
-      // Fallback
-      try {
-        const savedCart = localStorage.getItem(`eila_cart_${user.id}`);
-        setCart(savedCart ? JSON.parse(savedCart) : []);
-      } catch (e) {
-        setCart([]);
-      }
+      // Mark as loaded with the cached local version if database fetch failed
       setIsLoaded(true);
+      console.log('[Cart Lifecycle] Final React cart state (Offline Cache):', cachedCart);
     };
 
     loadCart();
-  }, [user]);
+  }, [user, authLoading, cartStorageKey]);
 
   // Persist active cart to localStorage & Supabase DB
   useEffect(() => {
-    if (!isLoaded) return;
+    // Only synchronize if the cart has finished loading from the database/storage!
+    if (!isLoaded || authLoading) return;
 
     const syncCart = async () => {
       try {
@@ -124,6 +149,7 @@ export function CartProvider({ children }) {
       if (!user?.id) return;
 
       try {
+        console.log('[Cart Lifecycle] Synchronizing cart state to Supabase database...', cart);
         const { data: dbCart } = await supabase
           .from('user_carts')
           .select('id')
@@ -131,6 +157,7 @@ export function CartProvider({ children }) {
           .single();
 
         if (dbCart?.id) {
+          // Sync database items
           await supabase
             .from('user_cart_items')
             .delete()
@@ -142,20 +169,24 @@ export function CartProvider({ children }) {
               product_id: item.id,
               quantity: item.quantity
             }));
-            await supabase
+            const { error: insertErr } = await supabase
               .from('user_cart_items')
               .insert(inserts);
+            if (insertErr) throw insertErr;
           }
+          console.log('[Cart Lifecycle] Cart synchronization complete.');
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('[Cart Lifecycle] Supabase cart synchronization warning:', e.message);
+      }
     };
 
     const debounceTimer = setTimeout(() => {
       syncCart();
-    }, 400);
+    }, 450);
 
     return () => clearTimeout(debounceTimer);
-  }, [cart, user, cartStorageKey, isLoaded]);
+  }, [cart, user, cartStorageKey, isLoaded, authLoading]);
 
   const addToCart = (product, quantity = 1) => {
     const minQty = product.moq || 1;
